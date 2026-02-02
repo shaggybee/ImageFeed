@@ -51,6 +51,9 @@ final class ImagesListCell: UITableViewCell {
             return
         }
         
+        labelContainerGradientLayer.cornerRadius = 16
+        labelContainerGradientLayer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        
         labelContainerGradientLayer.colors = [
             UIColor.ypBackground.withAlphaComponent(0).cgColor,
             UIColor.ypBackground.withAlphaComponent(0.5).cgColor
