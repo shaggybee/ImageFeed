@@ -15,6 +15,18 @@ final class ImagesListCell: UITableViewCell {
     @IBOutlet private weak var cellImage: UIImageView!
     @IBOutlet private weak var dateLabel: UILabel!
     @IBOutlet private weak var likeButton: UIButton!
+    @IBOutlet private weak var labelContainerView: UIView!
+    
+    // MARK: - Private properties
+    private var labelContainerGradientLayer: CAGradientLayer?
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if labelContainerGradientLayer == nil {
+            setGradientLayerForLabelContainer()
+        }
+    }
     
     // MARK: - Public methods
     func config(with imageName: String, isLiked: Bool) {
@@ -29,5 +41,25 @@ final class ImagesListCell: UITableViewCell {
         cellImage.image = image
         likeButton.setImage(imageButton, for: .normal)
         dateLabel.text = Date().longDateString
+    }
+    
+    // MARK: - Private methods
+    private func setGradientLayerForLabelContainer() {
+        labelContainerGradientLayer = CAGradientLayer()
+        
+        guard let labelContainerGradientLayer else {
+            return
+        }
+        
+        labelContainerGradientLayer.colors = [
+            UIColor.ypBackground.withAlphaComponent(0).cgColor,
+            UIColor.ypBackground.withAlphaComponent(0.5).cgColor
+        ]
+        
+        labelContainerGradientLayer.startPoint = CGPoint.zero
+        labelContainerGradientLayer.endPoint = CGPoint(x: 0, y: 1)
+        labelContainerGradientLayer.frame = labelContainerView.bounds
+        
+        labelContainerView.layer.insertSublayer(labelContainerGradientLayer, at: 0)
     }
 }

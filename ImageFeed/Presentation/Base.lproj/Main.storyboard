@@ -46,30 +46,45 @@
                                                     <state key="normal" title="Button"/>
                                                     <buttonConfiguration key="configuration" style="plain" image="FavoritesActive"/>
                                                 </button>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DateLabel" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XWd-xd-HcO" userLabel="Date Label">
-                                                    <rect key="frame" x="24.000000000000004" y="171.33333333333334" width="61.333333333333343" height="16.666666666666657"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <color key="textColor" name="YP White"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="avT-pH-ZWS" userLabel="Label Container">
+                                                    <rect key="frame" x="16" y="166" width="361" height="30"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DateLabel" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XWd-xd-HcO" userLabel="Date Label">
+                                                            <rect key="frame" x="8" y="4" width="345" height="18"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="18" id="9OM-Qj-eal"/>
+                                                            </constraints>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                            <color key="textColor" name="YP White"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="XWd-xd-HcO" firstAttribute="top" secondItem="avT-pH-ZWS" secondAttribute="top" constant="4" id="D1B-oK-r0q"/>
+                                                        <constraint firstItem="XWd-xd-HcO" firstAttribute="leading" secondItem="avT-pH-ZWS" secondAttribute="leading" constant="8" id="Lfj-C8-EeE"/>
+                                                        <constraint firstAttribute="height" constant="30" id="XIj-9U-ivj"/>
+                                                        <constraint firstItem="XWd-xd-HcO" firstAttribute="trailing" secondItem="avT-pH-ZWS" secondAttribute="trailing" constant="-8" id="ZCo-Oy-TTD"/>
+                                                    </constraints>
+                                                </view>
                                             </subviews>
                                             <color key="backgroundColor" name="YP Black"/>
                                             <constraints>
-                                                <constraint firstItem="XWd-xd-HcO" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Ujj-hl-jmI" secondAttribute="trailing" id="2LR-Jm-pZg"/>
-                                                <constraint firstItem="XWd-xd-HcO" firstAttribute="bottom" secondItem="Ujj-hl-jmI" secondAttribute="bottom" constant="-8" id="2OK-nT-6MC"/>
                                                 <constraint firstItem="CZS-Do-vh9" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ujj-hl-jmI" secondAttribute="leading" id="7hT-Bk-59A"/>
+                                                <constraint firstItem="avT-pH-ZWS" firstAttribute="bottom" secondItem="Ujj-hl-jmI" secondAttribute="bottom" id="AEM-KY-D7S"/>
                                                 <constraint firstItem="Ujj-hl-jmI" firstAttribute="leading" secondItem="1a1-KT-ZIk" secondAttribute="leading" constant="16" id="Hyb-c8-1yH"/>
                                                 <constraint firstItem="CZS-Do-vh9" firstAttribute="trailing" secondItem="Ujj-hl-jmI" secondAttribute="trailing" id="Pul-QR-ILP"/>
                                                 <constraint firstItem="Ujj-hl-jmI" firstAttribute="bottom" secondItem="1a1-KT-ZIk" secondAttribute="bottom" constant="-4" id="V61-Yx-xpg"/>
+                                                <constraint firstItem="avT-pH-ZWS" firstAttribute="trailing" secondItem="Ujj-hl-jmI" secondAttribute="trailing" id="Wni-SN-fFu"/>
                                                 <constraint firstItem="CZS-Do-vh9" firstAttribute="top" secondItem="Ujj-hl-jmI" secondAttribute="top" id="aIv-am-bER"/>
                                                 <constraint firstItem="Ujj-hl-jmI" firstAttribute="top" secondItem="1a1-KT-ZIk" secondAttribute="top" constant="4" id="cep-0g-s46"/>
-                                                <constraint firstItem="XWd-xd-HcO" firstAttribute="leading" secondItem="Ujj-hl-jmI" secondAttribute="leading" constant="8" id="ptw-Pf-EAe"/>
+                                                <constraint firstItem="avT-pH-ZWS" firstAttribute="leading" secondItem="Ujj-hl-jmI" secondAttribute="leading" id="lE1-tI-dDu"/>
                                                 <constraint firstItem="Ujj-hl-jmI" firstAttribute="trailing" secondItem="1a1-KT-ZIk" secondAttribute="trailing" constant="-16" id="xkO-bi-HZj"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="cellImage" destination="Ujj-hl-jmI" id="iSF-Ln-fTL"/>
                                             <outlet property="dateLabel" destination="XWd-xd-HcO" id="3AE-AF-bF0"/>
+                                            <outlet property="labelContainerView" destination="avT-pH-ZWS" id="gsI-A3-Ybc"/>
                                             <outlet property="likeButton" destination="CZS-Do-vh9" id="7Ph-zq-Fa6"/>
                                         </connections>
                                     </tableViewCell>

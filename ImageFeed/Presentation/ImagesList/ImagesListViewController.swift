@@ -7,10 +7,10 @@
 
 import UIKit
 
-class ImagesListViewController: UIViewController {
+final class ImagesListViewController: UIViewController {
     
     // MARK: - IBOutlets
-    @IBOutlet private var tableView: UITableView!
+    @IBOutlet private weak var tableView: UITableView!
     
     // MARK: - Private properties
     private let photosNames: [String] = (0..<20).map{ String($0) }
