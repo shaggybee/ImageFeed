@@ -35,8 +35,8 @@ final class ImagesListCell: UITableViewCell {
         }
         
         let imageButton = isLiked
-            ? UIImage(named: "FavoritesActive")
-            : UIImage(named: "FavoritesNoActive")
+            ? UIImage(named: "favorites_active")
+            : UIImage(named: "favorites_no_active")
         
         cellImage.image = image
         likeButton.setImage(imageButton, for: .normal)
