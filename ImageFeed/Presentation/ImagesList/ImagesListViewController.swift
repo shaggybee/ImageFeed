@@ -44,7 +44,9 @@ final class ImagesListViewController: UIViewController {
 
 // MARK: - UITableViewDelegate
 extension ImagesListViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: Constants.segueIdentifierForSignalImage, sender: indexPath)
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -82,6 +84,24 @@ extension ImagesListViewController: UITableViewDataSource {
     }
 }
 
+extension ImagesListViewController {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == Constants.segueIdentifierForSignalImage {
+            guard
+                let viewController = segue.destination as? SingleImageViewController,
+                let indexPath = sender as? IndexPath
+            else {
+                assertionFailure("Invalid segue destination")
+                return
+            }
+            
+            viewController.image = UIImage(named: photosNames[indexPath.row])
+        } else {
+            super.prepare(for: segue, sender: sender)
+        }
+    }
+}
+
 // MARK: - Constants
 extension ImagesListViewController {
     private enum Constants {
@@ -89,5 +109,7 @@ extension ImagesListViewController {
         
         static let cellImageInset = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         static let tableContentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+        
+        static let segueIdentifierForSignalImage = "ShowSingleImage"
     }
 }
