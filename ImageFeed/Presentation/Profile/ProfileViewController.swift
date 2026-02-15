@@ -11,22 +11,22 @@ final class ProfileViewController: UIViewController {
     
     // MARK: - Private properties
     private lazy var avatarImage: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "Avatar"))
+        let imageView = UIImageView(image: UIImage(resource: .avatar))
         
         imageView.contentMode = .scaleAspectFit
-        imageView.clipsToBounds = true
-        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = Constants.avatarImageSize / 2
         
         return imageView
-    }()
+    }().forAutoLayout
     
     private lazy var logoutButton: UIButton = {
         let button = UIButton()
         
-        button.setImage(UIImage(named: "exit"), for: .normal)
+        button.setImage(UIImage(resource: .exit), for: .normal)
         
         return button
-    }().forAutoLayout()
+    }().forAutoLayout
     
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
@@ -35,7 +35,7 @@ final class ProfileViewController: UIViewController {
         label.textColor = .ypWhite
         
         return label
-    }().forAutoLayout()
+    }().forAutoLayout
     
     private lazy var loginLabel: UILabel = {
         let label = UILabel()
@@ -44,7 +44,7 @@ final class ProfileViewController: UIViewController {
         label.textColor = .ypGray
         
         return label
-    }().forAutoLayout()
+    }().forAutoLayout
     
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
@@ -53,7 +53,7 @@ final class ProfileViewController: UIViewController {
         label.textColor = .ypWhite
         
         return label
-    }().forAutoLayout()
+    }().forAutoLayout
     
     private lazy var profileInfoStackView: UIStackView = {
         let stackView = UIStackView()
@@ -62,7 +62,7 @@ final class ProfileViewController: UIViewController {
         stackView.spacing = Constants.paddingXS
 
         return stackView
-    }().forAutoLayout()
+    }().forAutoLayout
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
