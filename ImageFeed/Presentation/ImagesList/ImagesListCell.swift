@@ -19,6 +19,7 @@ final class ImagesListCell: UITableViewCell {
     
     // MARK: - Private properties
     private var labelContainerGradientLayer: CAGradientLayer?
+    private let today = Date()
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -35,12 +36,12 @@ final class ImagesListCell: UITableViewCell {
         }
         
         let imageButton = isLiked
-            ? UIImage(named: "FavoritesActive")
-            : UIImage(named: "FavoritesNoActive")
+            ? UIImage(resource: .favoritesActive)
+            : UIImage(resource: .favoritesNoActive)
         
         cellImage.image = image
         likeButton.setImage(imageButton, for: .normal)
-        dateLabel.text = Date().longDateString
+        dateLabel.text = today.longDateString
     }
     
     // MARK: - Private methods
