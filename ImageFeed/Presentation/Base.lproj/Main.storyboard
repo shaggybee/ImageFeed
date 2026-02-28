@@ -305,18 +305,26 @@
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Xw6-BL-PRz">
+                                <rect key="frame" x="0.0" y="172" width="393" height="4"/>
+                                <color key="progressTintColor" name="YP Black"/>
+                            </progressView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="cZ3-nl-wqm"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="Xw6-BL-PRz" firstAttribute="trailing" secondItem="cZ3-nl-wqm" secondAttribute="trailing" id="6Ke-0S-4iT"/>
                             <constraint firstItem="LaB-s7-MVw" firstAttribute="trailing" secondItem="UgE-BV-eNk" secondAttribute="trailing" id="8N8-us-bUL"/>
+                            <constraint firstItem="Xw6-BL-PRz" firstAttribute="top" secondItem="cZ3-nl-wqm" secondAttribute="top" id="Jfk-QL-8I1"/>
                             <constraint firstItem="LaB-s7-MVw" firstAttribute="top" secondItem="cZ3-nl-wqm" secondAttribute="top" id="KPe-DQ-vyr"/>
                             <constraint firstItem="LaB-s7-MVw" firstAttribute="leading" secondItem="UgE-BV-eNk" secondAttribute="leading" id="a2W-Eb-D2h"/>
                             <constraint firstItem="LaB-s7-MVw" firstAttribute="bottom" secondItem="cZ3-nl-wqm" secondAttribute="bottom" id="jwy-Qx-KYT"/>
+                            <constraint firstItem="Xw6-BL-PRz" firstAttribute="leading" secondItem="cZ3-nl-wqm" secondAttribute="leading" id="mc6-Hr-yox"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="XCd-sd-uZ1"/>
                     <connections>
+                        <outlet property="progressView" destination="Xw6-BL-PRz" id="Vrr-Y2-cFy"/>
                         <outlet property="webView" destination="LaB-s7-MVw" id="kbc-0s-4Si"/>
                     </connections>
                 </viewController>

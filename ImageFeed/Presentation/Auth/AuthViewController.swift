@@ -8,14 +8,17 @@
 import UIKit
 
 final class AuthViewController: UIViewController {
+    // MARK: - Private properties
+    private lazy var tokenStorage = OAuth2TokenStorage.shared
     
-    // MARK: - Lifecycle
+    // MARK: - Lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureBackButton()
     }
     
+    // MARK: - Overrides
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier != Constants.showWebViewSegueIdentifier {
             super.prepare(for: segue, sender: sender)
@@ -41,8 +44,23 @@ final class AuthViewController: UIViewController {
 
 // MARK: - WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
-    func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        //
+    func webViewViewController(
+        _ vc: WebViewViewController,
+        didAuthenticateWithCode code: String
+    ) {
+        OAuth2Service.shared.fetchOAuthToken(by: code) { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+            case .success(let accessToken):
+                print("access token \(accessToken)")
+                self.tokenStorage.token = accessToken
+            case .failure(let error):
+                print("[AuthViewController] \(error.localizedDescription)")
+            }
+            
+            vc.dismiss(animated: true)
+        }
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
