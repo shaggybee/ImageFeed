@@ -25,7 +25,7 @@ final class SplashViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier != Constants.showAuthViewSegueIdentifier {
             super.prepare(for: segue, sender: sender)
-
+            
             return
         }
         
@@ -40,12 +40,12 @@ final class SplashViewController: UIViewController {
     
     private func switchToTabBarController() {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first else {
+              let window = windowScene.windows.first else
+        {
             assertionFailure("Invalid window configuration")
-        
+            
             return
         }
-        
         
         let tabBarController = UIStoryboard(name: Constants.storyboardName, bundle: .main)
             .instantiateViewController(identifier: Constants.tabBarViewControllerIdentifier)
@@ -58,7 +58,6 @@ final class SplashViewController: UIViewController {
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
         vc.dismiss(animated: true)
-        
         switchToTabBarController()
     }
 }
