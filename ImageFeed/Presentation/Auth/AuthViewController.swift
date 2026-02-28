@@ -8,6 +8,13 @@
 import UIKit
 
 final class AuthViewController: UIViewController {
+    
+    //MARK: - IBOutlets
+    @IBOutlet private weak var loadingActivityIndicator: UIActivityIndicatorView!
+    
+    // MARK: - Public properties
+    public weak var delegate: AuthViewControllerDelegate?
+    
     // MARK: - Private properties
     private lazy var tokenStorage = OAuth2TokenStorage.shared
     
@@ -16,6 +23,7 @@ final class AuthViewController: UIViewController {
         super.viewDidLoad()
         
         configureBackButton()
+        configureLoadingIndicator()
     }
     
     // MARK: - Overrides
@@ -40,6 +48,19 @@ final class AuthViewController: UIViewController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor(resource: .ypBlack)
     }
+    
+    private func configureLoadingIndicator() {
+        loadingActivityIndicator.hidesWhenStopped = true
+    }
+    
+    private func showLoadingIndicator() {
+        loadingActivityIndicator.isHidden = true
+        loadingActivityIndicator.startAnimating()
+    }
+    
+    private func hideLoadingIndicator() {
+        loadingActivityIndicator.stopAnimating()
+    }
 }
 
 // MARK: - WebViewViewControllerDelegate
@@ -48,23 +69,26 @@ extension AuthViewController: WebViewViewControllerDelegate {
         _ vc: WebViewViewController,
         didAuthenticateWithCode code: String
     ) {
+        vc.navigationController?.popViewController(animated: true)
+        showLoadingIndicator()
+        
         OAuth2Service.shared.fetchOAuthToken(by: code) { [weak self] result in
             guard let self else { return }
-            
+
             switch result {
             case .success(let accessToken):
-                print("access token \(accessToken)")
                 self.tokenStorage.token = accessToken
+                delegate?.didAuthenticate(self)
             case .failure(let error):
                 print("[AuthViewController] \(error.localizedDescription)")
             }
             
-            vc.dismiss(animated: true)
+            hideLoadingIndicator()
         }
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
-        vc.dismiss(animated: true)
+        vc.navigationController?.popViewController(animated: true)
     }
 }
 

@@ -53,6 +53,7 @@ final class OAuth2Service {
     // MARK: - Private methods
     private func makeOAuthTokenRequest(with code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: AuthorizationConstants.tokenURL) else {
+            print("[OAuth2Service] failed to create URLComponents")
             return nil
         }
         
@@ -65,6 +66,7 @@ final class OAuth2Service {
         ]
         
         guard let authTokenUrl = urlComponents.url else {
+            print("[OAuth2Service] failed to get URL from URLComponents")
             return nil
         }
         

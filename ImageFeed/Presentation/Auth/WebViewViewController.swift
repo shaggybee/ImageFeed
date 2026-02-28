@@ -62,11 +62,6 @@ final class WebViewViewController: UIViewController {
         }
     }
     
-    // MARK: - IBActions
-    @IBAction private func didTapBackButton(_ sender: Any?) {
-        delegate?.webViewViewControllerDidCancel(self)
-    }
-    
     // MARK: - Private methods
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: AuthorizationConstants.authorizeURLString) else {
