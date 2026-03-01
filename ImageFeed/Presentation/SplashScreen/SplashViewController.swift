@@ -14,7 +14,7 @@ final class SplashViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if (tokenStorage.token ?? "").isEmpty == true {
+        if (tokenStorage.token ?? "").isEmpty {
             performSegue(withIdentifier: Constants.showAuthViewSegueIdentifier, sender: nil)
         } else {
             switchToTabBarController()

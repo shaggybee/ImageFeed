@@ -11,12 +11,17 @@ final class OAuth2Service {
     static let shared: OAuth2Service = OAuth2Service()
     
     // MARK: - Private properties
-    private lazy var decoder = JSONDecoder()
+    private lazy var decoder = {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
+        return decoder
+    }()
     
     private init() {}
     
     // MARK: - Public methods
-    public func fetchOAuthToken(
+    func fetchOAuthToken(
         by code: String,
         completion: @escaping (Result<String, Error>) -> Void
     ) {
@@ -71,7 +76,7 @@ final class OAuth2Service {
         }
         
         var request = URLRequest(url: authTokenUrl)
-        request.httpMethod = HTTPMethod.POST.rawValue
+        request.httpMethod = HTTPMethod.post.rawValue
         
         return request
     }
