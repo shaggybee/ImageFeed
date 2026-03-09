@@ -254,36 +254,18 @@
                                     <segue destination="0sk-20-UdG" kind="show" identifier="ShowWebView" id="10P-Nu-6K5"/>
                                 </connections>
                             </button>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="b6J-ic-dT1" userLabel="Loading Indicator">
-                                <rect key="frame" x="171" y="400.66666666666669" width="51" height="51"/>
-                                <color key="backgroundColor" name="YP White"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="51" id="IJr-WW-li0"/>
-                                    <constraint firstAttribute="width" constant="51" id="vcj-WQ-HDC"/>
-                                </constraints>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="8"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="g0g-fW-yLT"/>
                         <color key="backgroundColor" name="YP Black"/>
                         <constraints>
                             <constraint firstItem="JrC-k7-c2p" firstAttribute="centerX" secondItem="wqS-Sb-UR2" secondAttribute="centerX" id="8Wp-ug-ufX"/>
                             <constraint firstItem="g0g-fW-yLT" firstAttribute="trailing" secondItem="khw-nY-hI7" secondAttribute="trailing" constant="16" id="ALD-LJ-drJ"/>
-                            <constraint firstItem="b6J-ic-dT1" firstAttribute="centerX" secondItem="wqS-Sb-UR2" secondAttribute="centerX" id="G2H-kL-59C"/>
                             <constraint firstItem="khw-nY-hI7" firstAttribute="bottom" secondItem="g0g-fW-yLT" secondAttribute="bottom" constant="-90" id="dmy-qg-s3y"/>
                             <constraint firstItem="khw-nY-hI7" firstAttribute="leading" secondItem="g0g-fW-yLT" secondAttribute="leading" constant="16" id="lOi-0o-ZKz"/>
-                            <constraint firstItem="b6J-ic-dT1" firstAttribute="centerY" secondItem="wqS-Sb-UR2" secondAttribute="centerY" id="ouD-KS-q5U"/>
                             <constraint firstItem="JrC-k7-c2p" firstAttribute="centerY" secondItem="wqS-Sb-UR2" secondAttribute="centerY" id="r72-kO-ctZ"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="LVs-kE-xXP"/>
-                    <connections>
-                        <outlet property="loadingActivityIndicator" destination="b6J-ic-dT1" id="gXa-Cy-d7q"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YSJ-bE-X9G" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

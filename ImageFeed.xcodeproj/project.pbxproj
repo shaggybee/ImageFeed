@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		633B606C2F4E0CEA00DD5539 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 633B606B2F4E0CEA00DD5539 /* WebKit.framework */; };
+		6347D8102F5EE87200416C28 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 6347D80F2F5EE87200416C28 /* ProgressHUD */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				633B606C2F4E0CEA00DD5539 /* WebKit.framework in Frameworks */,
+				6347D8102F5EE87200416C28 /* ProgressHUD in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +95,7 @@
 			);
 			name = ImageFeed;
 			packageProductDependencies = (
+				6347D80F2F5EE87200416C28 /* ProgressHUD */,
 			);
 			productName = ImageFeed;
 			productReference = 6380A0D12F2D578100D7C044 /* ImageFeed.app */;
@@ -122,6 +125,9 @@
 			);
 			mainGroup = 6380A0C82F2D578100D7C044;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6347D80E2F5EE87200416C28 /* XCRemoteSwiftPackageReference "ProgressHUD" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6380A0D22F2D578100D7C044 /* Products */;
 			projectDirPath = "";
@@ -370,6 +376,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6347D80E2F5EE87200416C28 /* XCRemoteSwiftPackageReference "ProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/relatedcode/ProgressHUD";
+			requirement = {
+				kind = exactVersion;
+				version = 14.1.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6347D80F2F5EE87200416C28 /* ProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6347D80E2F5EE87200416C28 /* XCRemoteSwiftPackageReference "ProgressHUD" */;
+			productName = ProgressHUD;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6380A0C92F2D578100D7C044 /* Project object */;
 }

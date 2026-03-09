@@ -6,11 +6,9 @@
 //
 
 import UIKit
+import ProgressHUD
 
 final class AuthViewController: UIViewController {
-    
-    //MARK: - IBOutlets
-    @IBOutlet private weak var loadingActivityIndicator: UIActivityIndicatorView!
     
     // MARK: - Public properties
     public weak var delegate: AuthViewControllerDelegate?
@@ -50,16 +48,17 @@ final class AuthViewController: UIViewController {
     }
     
     private func configureLoadingIndicator() {
-        loadingActivityIndicator.hidesWhenStopped = true
+        ProgressHUD.mediaSize = Constants.progressIndicatorMediaSize
+        ProgressHUD.marginSize = Constants.progressIndicatorMarginSize
+        ProgressHUD.colorAnimation = .ypBlack
     }
     
     private func showLoadingIndicator() {
-        loadingActivityIndicator.isHidden = true
-        loadingActivityIndicator.startAnimating()
+        ProgressHUD.animate()
     }
     
     private func hideLoadingIndicator() {
-        loadingActivityIndicator.stopAnimating()
+        ProgressHUD.dismiss()
     }
 }
 
@@ -95,6 +94,8 @@ extension AuthViewController: WebViewViewControllerDelegate {
 // MARK: - Constants
 private extension AuthViewController {
     enum Constants {
+        static let progressIndicatorMediaSize: CGFloat = 25
+        static let progressIndicatorMarginSize: CGFloat = 13
         static let showWebViewSegueIdentifier = "ShowWebView"
     }
 }
