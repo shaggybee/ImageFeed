@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import ProgressHUD
 
 final class AuthViewController: UIViewController {
     
@@ -21,7 +20,6 @@ final class AuthViewController: UIViewController {
         super.viewDidLoad()
         
         configureBackButton()
-        configureLoadingIndicator()
     }
     
     // MARK: - Overrides
@@ -46,20 +44,6 @@ final class AuthViewController: UIViewController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor(resource: .ypBlack)
     }
-    
-    private func configureLoadingIndicator() {
-        ProgressHUD.mediaSize = Constants.progressIndicatorMediaSize
-        ProgressHUD.marginSize = Constants.progressIndicatorMarginSize
-        ProgressHUD.colorAnimation = .ypBlack
-    }
-    
-    private func showLoadingIndicator() {
-        ProgressHUD.animate()
-    }
-    
-    private func hideLoadingIndicator() {
-        ProgressHUD.dismiss()
-    }
 }
 
 // MARK: - WebViewViewControllerDelegate
@@ -69,9 +53,11 @@ extension AuthViewController: WebViewViewControllerDelegate {
         didAuthenticateWithCode code: String
     ) {
         vc.navigationController?.popViewController(animated: true)
-        showLoadingIndicator()
+        UIBlockingProgressHUD.show()
         
         OAuth2Service.shared.fetchOAuthToken(by: code) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
             guard let self else { return }
 
             switch result {
@@ -81,8 +67,6 @@ extension AuthViewController: WebViewViewControllerDelegate {
             case .failure(let error):
                 print("[AuthViewController] \(error.localizedDescription)")
             }
-            
-            hideLoadingIndicator()
         }
     }
     
@@ -94,8 +78,6 @@ extension AuthViewController: WebViewViewControllerDelegate {
 // MARK: - Constants
 private extension AuthViewController {
     enum Constants {
-        static let progressIndicatorMediaSize: CGFloat = 25
-        static let progressIndicatorMarginSize: CGFloat = 13
         static let showWebViewSegueIdentifier = "ShowWebView"
     }
 }

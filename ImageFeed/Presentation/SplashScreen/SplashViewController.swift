@@ -14,6 +14,8 @@ final class SplashViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        UIBlockingProgressHUD.configProgressHUD()
+        
         if (tokenStorage.token ?? "").isEmpty {
             performSegue(withIdentifier: Constants.showAuthViewSegueIdentifier, sender: nil)
         } else {

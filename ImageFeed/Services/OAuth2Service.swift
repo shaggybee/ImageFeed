@@ -11,6 +11,9 @@ final class OAuth2Service {
     static let shared: OAuth2Service = OAuth2Service()
     
     // MARK: - Private properties
+    private var lastCode: String?
+    private var task: URLSessionTask?
+    
     private lazy var decoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -25,6 +28,18 @@ final class OAuth2Service {
         by code: String,
         completion: @escaping (Result<String, Error>) -> Void
     ) {
+        assert(Thread.isMainThread)
+        
+        if (code == lastCode) {
+            completion(.failure(NetworkError.invalidRequest))
+            
+            return
+        }
+        
+        task?.cancel()
+        
+        lastCode = code
+        
         guard let request = makeOAuthTokenRequest(with: code) else {
             print("[OAuth2Service] request was not generated for fetch auth token")
             completion(.failure(NetworkError.invalidRequest))
@@ -33,25 +48,31 @@ final class OAuth2Service {
         }
         
         let task =  URLSession.shared.data(for: request) { [weak self] result in
-            guard let self else { return }
-            
-            switch result {
-            case .success(let data):
-                do {
-                    let responseBody = try self.decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    let accessToken = responseBody.accessToken
-                    
-                    completion(.success(accessToken))
-                } catch {
-                    print("[OAuth2Service] response decoding error: \(error.localizedDescription)")
-                    completion(.failure(NetworkError.decodingError(error)))
+            DispatchQueue.main.async {
+                guard let self else { return }
+                
+                switch result {
+                case .success(let data):
+                    do {
+                        let responseBody = try self.decoder.decode(OAuthTokenResponseBody.self, from: data)
+                        let accessToken = responseBody.accessToken
+                        
+                        completion(.success(accessToken))
+                    } catch {
+                        print("[OAuth2Service] response decoding error: \(error.localizedDescription)")
+                        completion(.failure(NetworkError.decodingError(error)))
+                    }
+                case .failure(let error):
+                    print("[OAuth2Service] request ended with an error: \(error.localizedDescription)")
+                    completion(.failure(error))
                 }
-            case .failure(let error):
-                print("[OAuth2Service] request ended with an error: \(error.localizedDescription)")
-                completion(.failure(error))
+                
+                self.lastCode = nil
+                self.task = nil
             }
         }
         
+        self.task = task
         task.resume()
     }
     
