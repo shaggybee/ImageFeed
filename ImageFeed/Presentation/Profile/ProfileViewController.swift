@@ -10,6 +10,9 @@ import UIKit
 final class ProfileViewController: UIViewController {
     
     // MARK: - Private properties
+    private lazy var profileService = ProfileService.shared
+    
+    // MARK: - Private properties
     private lazy var avatarImage: UIImageView = {
         let imageView = UIImageView(image: UIImage(resource: .avatar))
         
@@ -69,15 +72,15 @@ final class ProfileViewController: UIViewController {
         super.viewDidLoad()
         
         setElements()
+        
+        if let profile = profileService.profile {
+            updateProfileDetails(profile: profile)
+        }
     }
     
     // MARK: - Private methods
     private func setElements() {
         view.backgroundColor = .ypBlack
-        
-        nameLabel.text = "Екатерина Новикова"
-        loginLabel.text = "@ekaterina_nov"
-        descriptionLabel.text = "Hello, world!"
         
         view.addSubview(avatarImage)
         view.addSubview(logoutButton)
@@ -105,6 +108,12 @@ final class ProfileViewController: UIViewController {
             logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Constants.paddingS),
             logoutButton.centerYAnchor.constraint(equalTo: avatarImage.centerYAnchor)
         ])
+    }
+    
+    private func updateProfileDetails(profile: Profile) {
+        nameLabel.text = profile.name
+        loginLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio
     }
 }
 

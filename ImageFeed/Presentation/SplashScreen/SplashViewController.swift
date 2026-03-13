@@ -10,16 +10,17 @@ import UIKit
 final class SplashViewController: UIViewController {
     // MARK: - Private properties
     private lazy var tokenStorage = OAuth2TokenStorage.shared
+    private lazy var profileService = ProfileService.shared
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         UIBlockingProgressHUD.configProgressHUD()
         
-        if (tokenStorage.token ?? "").isEmpty {
-            performSegue(withIdentifier: Constants.showAuthViewSegueIdentifier, sender: nil)
+        if let token = tokenStorage.token, !token.isEmpty {
+            fetchProfile(token: token)
         } else {
-            switchToTabBarController()
+            performSegue(withIdentifier: Constants.showAuthViewSegueIdentifier, sender: nil)
         }
     }
     
@@ -40,6 +41,7 @@ final class SplashViewController: UIViewController {
         }
     }
     
+    // MARK: - Private methods
     private func switchToTabBarController() {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else
@@ -54,13 +56,35 @@ final class SplashViewController: UIViewController {
         
         window.rootViewController = tabBarController
     }
+    
+    private func fetchProfile(token: String) {
+        UIBlockingProgressHUD.show()
+        
+        profileService.fetchProfile(token) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard let self else { return }
+            
+            switch result {
+            case .success:
+                switchToTabBarController()
+            case .failure:
+                break
+            }
+        }
+    }
 }
 
 // MARK: - AuthViewControllerDelegate
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
         vc.dismiss(animated: true)
-        switchToTabBarController()
+        
+        guard let token = tokenStorage.token, !token.isEmpty else {
+            return
+        }
+        
+        fetchProfile(token: token)
     }
 }
 
