@@ -17,7 +17,6 @@ final class ProfileImageService {
     
     private lazy var tokenStorage = OAuth2TokenStorage.shared
     private lazy var notificationCenter = NotificationCenter.default
-    private lazy var decoder = JSONDecoder.snakeCaseDecoder
     
     private init() {}
     
@@ -26,41 +25,34 @@ final class ProfileImageService {
         task?.cancel()
         
         guard let token = tokenStorage.token, !token.isEmpty else {
-            print("[ProfileImageService] authorization token missing or contains an empty string")
+            print("[ProfileImageService.fetchProfileImage] authorization token missing or contains an empty string")
             completion(.failure(NetworkError.invalidRequest))
             
             return
         }
         
         guard let request = makeProfileImageRequest(for: username, with: token) else {
-            print("[ProfileImageService] request was not generated for fetch profile")
+            print("[ProfileImageService.fetchProfileImage] request was not generated for fetch profile")
             completion(.failure(NetworkError.invalidRequest))
             
             return
         }
         
-        let task = URLSession.shared.data(for: request) { [weak self] request in
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
             guard let self else { return }
             
-            switch request {
+            switch result {
             case .success(let data):
-                do {
-                    let responseBody = try self.decoder.decode(UserResult.self, from: data)
-                    
-                    self.profileAvatarURL = responseBody.profileImage.small
-                    
-                    completion(.success(self.profileAvatarURL ?? ""))
-                    
-                    notificationCenter.post(
-                        name: ProfileImageService.didChangeNotification,
-                        object: self,
-                        userInfo: ["URL": self.profileAvatarURL ?? ""])
-                } catch {
-                    print("[ProfileImageService] response decoding error: \(error.localizedDescription)")
-                    completion(.failure(NetworkError.decodingError(error)))
-                }
+                self.profileAvatarURL = data.profileImage.small
+                
+                completion(.success(self.profileAvatarURL ?? ""))
+                
+                notificationCenter.post(
+                    name: ProfileImageService.didChangeNotification,
+                    object: self,
+                    userInfo: ["URL": self.profileAvatarURL ?? ""])
             case .failure(let error):
-                print("[ProfileImageService] request ended with an error: \(error.localizedDescription)")
+                print("[ProfileImageService.fetchProfileImage] request ended with an error: \(error.localizedDescription)")
                 completion(.failure(error))
             }
             
@@ -74,7 +66,7 @@ final class ProfileImageService {
     // MARK: - Private methods
     private func makeProfileImageRequest(for username: String, with token: String) -> URLRequest? {
         guard let url = URL(string: AuthorizationConstants.defaultBaseURLString + AuthorizationConstants.API.users + "/\(username)") else {
-            print("[ProfileImageService] failed to create URL")
+            print("[ProfileImageService.makeProfileImageRequest] failed to create URL")
             
             return nil
         }

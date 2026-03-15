@@ -14,45 +14,36 @@ final class ProfileService {
     private var task: URLSessionTask?
     private(set) var profile: Profile?
     
-    private lazy var decoder = JSONDecoder.snakeCaseDecoder
-    
     private init() {}
     
     // MARK: - Public methods
     func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         task?.cancel()
         
-        guard let request = makeProfileReauest(with: token) else {
-            print("[ProfileService] request was not generated for fetch profile")
+        guard let request = makeProfileRequest(with: token) else {
+            print("[ProfileService.fetchProfile] request was not generated for fetch profile")
             completion(.failure(NetworkError.invalidRequest))
             
             return
         }
         
-        let task = URLSession.shared.data(for: request) { [weak self] result in
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
             guard let self else { return }
             
             switch result {
             case .success(let data):
-                do {
-                    let responseBody = try self.decoder.decode(ProfileResult.self, from: data)
-                    
-                    let profile = Profile(
-                        username: responseBody.username,
-                        firstName: responseBody.firstName,
-                        lastName: responseBody.lastName,
-                        bio: responseBody.bio,
-                    )
-                    
-                    self.profile = profile
-                    
-                    completion(.success(profile))
-                } catch {
-                    print("[ProfileService] response decoding error: \(error.localizedDescription)")
-                    completion(.failure(NetworkError.decodingError(error)))
-                }
+                let profile = Profile(
+                    username: data.username,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    bio: data.bio,
+                )
+                
+                self.profile = profile
+                
+                completion(.success(profile))
             case .failure(let error):
-                print("[ProfileService] request ended with an error: \(error.localizedDescription)")
+                print("[ProfileService.fetchProfile] request ended with an error: \(error.localizedDescription)")
                 completion(.failure(error))
             }
             
@@ -64,9 +55,9 @@ final class ProfileService {
     }
     
     // MARK: - Private methods
-    private func makeProfileReauest(with token: String) -> URLRequest? {
+    private func makeProfileRequest(with token: String) -> URLRequest? {
         guard let url = URL(string:  AuthorizationConstants.defaultBaseURLString + AuthorizationConstants.API.userProfile) else {
-            print("[ProfileService] failed to create URL")
+            print("[ProfileService.makeProfileRequest] failed to create URL")
             
             return nil
         }

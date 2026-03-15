@@ -44,6 +44,20 @@ final class AuthViewController: UIViewController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor(resource: .ypBlack)
     }
+    
+    private func showErrorAlert() {
+        let alert = UIAlertController(
+            title: Constants.Alert.title,
+            message: Constants.Alert.subtitle,
+            preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: Constants.Alert.buttonText, style: .default) { _ in
+            alert.dismiss(animated: true)
+        }
+        
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
 }
 
 // MARK: - WebViewViewControllerDelegate
@@ -65,7 +79,8 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 self.tokenStorage.token = accessToken
                 delegate?.didAuthenticate(self)
             case .failure(let error):
-                print("[AuthViewController] \(error.localizedDescription)")
+                self.showErrorAlert()
+                print("[AuthViewController.webViewViewController] Error: \(error.localizedDescription)")
             }
         }
     }
@@ -79,5 +94,11 @@ extension AuthViewController: WebViewViewControllerDelegate {
 private extension AuthViewController {
     enum Constants {
         static let showWebViewSegueIdentifier = "ShowWebView"
+        
+        enum Alert {
+            static let title = "Что-то пошло не так"
+            static let subtitle = "Не удалось войти в систему"
+            static let buttonText = "Ok"
+        }
     }
 }

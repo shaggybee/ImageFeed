@@ -13,10 +13,14 @@ final class SplashViewController: UIViewController {
     private lazy var profileService = ProfileService.shared
     private lazy var profileImageService = ProfileImageService.shared
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
         UIBlockingProgressHUD.configProgressHUD()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
         if let token = tokenStorage.token, !token.isEmpty {
             fetchProfile(token: token)
@@ -71,7 +75,8 @@ final class SplashViewController: UIViewController {
                 profileImageService.fetchProfileImage(for: profile.username) { _ in }
                 
                 switchToTabBarController()
-            case .failure:
+            case .failure(let error):
+                print("[SplashViewController.fetchProfile] Error: \(error)")
                 break
             }
         }
@@ -82,12 +87,6 @@ final class SplashViewController: UIViewController {
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
         vc.dismiss(animated: true)
-        
-        guard let token = tokenStorage.token, !token.isEmpty else {
-            return
-        }
-        
-        fetchProfile(token: token)
     }
 }
 
