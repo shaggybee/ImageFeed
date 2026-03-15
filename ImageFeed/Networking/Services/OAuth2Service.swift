@@ -14,12 +14,7 @@ final class OAuth2Service {
     private var lastCode: String?
     private var task: URLSessionTask?
     
-    private lazy var decoder = {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        
-        return decoder
-    }()
+    private lazy var decoder = JSONDecoder.snakeCaseDecoder
     
     private init() {}
     

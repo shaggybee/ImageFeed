@@ -14,12 +14,7 @@ final class ProfileService {
     private var task: URLSessionTask?
     private(set) var profile: Profile?
     
-    private lazy var decoder = {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        
-        return decoder
-    }()
+    private lazy var decoder = JSONDecoder.snakeCaseDecoder
     
     private init() {}
     
@@ -53,7 +48,8 @@ final class ProfileService {
                     
                     completion(.success(profile))
                 } catch {
-                    
+                    print("[ProfileService] response decoding error: \(error.localizedDescription)")
+                    completion(.failure(NetworkError.decodingError(error)))
                 }
             case .failure(let error):
                 print("[ProfileService] request ended with an error: \(error.localizedDescription)")

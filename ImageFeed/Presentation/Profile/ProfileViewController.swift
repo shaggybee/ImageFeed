@@ -11,8 +11,12 @@ final class ProfileViewController: UIViewController {
     
     // MARK: - Private properties
     private lazy var profileService = ProfileService.shared
+    private lazy var profileImageService = ProfileImageService.shared
+    private lazy var notificationCenter = NotificationCenter.default
     
     // MARK: - Private properties
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
     private lazy var avatarImage: UIImageView = {
         let imageView = UIImageView(image: UIImage(resource: .avatar))
         
@@ -54,6 +58,8 @@ final class ProfileViewController: UIViewController {
 
         label.font = .systemFont(ofSize: Constants.Typography.body)
         label.textColor = .ypWhite
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
         
         return label
     }().forAutoLayout
@@ -72,10 +78,12 @@ final class ProfileViewController: UIViewController {
         super.viewDidLoad()
         
         setElements()
+        addImageServiceObserver()
         
         if let profile = profileService.profile {
             updateProfileDetails(profile: profile)
         }
+        updateAvatar()
     }
     
     // MARK: - Private methods
@@ -102,6 +110,7 @@ final class ProfileViewController: UIViewController {
             
             profileInfoStackView.leadingAnchor.constraint(equalTo: avatarImage.leadingAnchor),
             profileInfoStackView.topAnchor.constraint(equalTo: avatarImage.bottomAnchor, constant: Constants.paddingXS),
+            profileInfoStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Constants.paddingS),
             
             logoutButton.widthAnchor.constraint(equalToConstant: Constants.logoutButtonSize),
             logoutButton.heightAnchor.constraint(equalToConstant: Constants.logoutButtonSize),
@@ -114,6 +123,23 @@ final class ProfileViewController: UIViewController {
         nameLabel.text = profile.name
         loginLabel.text = profile.loginName
         descriptionLabel.text = profile.bio
+    }
+    
+    private func addImageServiceObserver() {
+        profileImageServiceObserver = notificationCenter.addObserver(
+            forName: ProfileImageService.didChangeNotification,
+            object: nil,
+            queue: .main,
+            using: { [weak self] _ in
+                self?.updateAvatar()
+            })
+    }
+    
+    private func updateAvatar() {
+        guard let profileAvatarURL = profileImageService.profileAvatarURL,
+              let url = URL(string: profileAvatarURL) else {
+            return
+        }
     }
 }
 

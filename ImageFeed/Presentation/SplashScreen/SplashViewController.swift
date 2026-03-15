@@ -11,6 +11,7 @@ final class SplashViewController: UIViewController {
     // MARK: - Private properties
     private lazy var tokenStorage = OAuth2TokenStorage.shared
     private lazy var profileService = ProfileService.shared
+    private lazy var profileImageService = ProfileImageService.shared
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -66,7 +67,9 @@ final class SplashViewController: UIViewController {
             guard let self else { return }
             
             switch result {
-            case .success:
+            case .success(let profile):
+                profileImageService.fetchProfileImage(for: profile.username) { _ in }
+                
                 switchToTabBarController()
             case .failure:
                 break

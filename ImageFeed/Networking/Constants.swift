@@ -17,6 +17,7 @@ enum AuthorizationConstants {
     
     enum API {
         static let userProfile = "/me"
+        static let users = "/users"
     }
     
     enum QueryItem {
