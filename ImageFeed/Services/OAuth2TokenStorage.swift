@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftKeychainWrapper
 
 final class OAuth2TokenStorage {
     static let shared = OAuth2TokenStorage()
@@ -13,7 +14,7 @@ final class OAuth2TokenStorage {
     private init() {}
     
     // MARK: - Private Properties
-    private let storage: UserDefaults = .standard
+    private lazy var storage = KeychainWrapper.standard
 }
 
 // MARK: - OAuth2TokenStorageProtocol
@@ -23,7 +24,11 @@ extension OAuth2TokenStorage: OAuth2TokenStorageProtocol {
             storage.string(forKey: Constants.storageAccessTokenKey)
         }
         set {
-            storage.set(newValue, forKey: Constants.storageAccessTokenKey)
+            if let newToken = newValue {
+                storage.set(newToken, forKey: Constants.storageAccessTokenKey)
+            } else {
+                storage.removeObject(forKey: Constants.storageAccessTokenKey)
+            }
         }
     }
 }

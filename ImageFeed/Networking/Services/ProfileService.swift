@@ -14,6 +14,8 @@ final class ProfileService {
     private var task: URLSessionTask?
     private(set) var profile: Profile?
     
+    private lazy var logger = AppLogger.shared
+    
     private init() {}
     
     // MARK: - Public methods
@@ -21,7 +23,7 @@ final class ProfileService {
         task?.cancel()
         
         guard let request = makeProfileRequest(with: token) else {
-            print("[ProfileService.fetchProfile] request was not generated for fetch profile")
+            logger.error("[ProfileService.fetchProfile] request was not generated for fetch profile")
             completion(.failure(NetworkError.invalidRequest))
             
             return
@@ -43,7 +45,7 @@ final class ProfileService {
                 
                 completion(.success(profile))
             case .failure(let error):
-                print("[ProfileService.fetchProfile] request ended with an error: \(error.localizedDescription)")
+                self.logger.error("[ProfileService.fetchProfile] request ended with an error: \(error.localizedDescription)")
                 completion(.failure(error))
             }
             
@@ -57,7 +59,7 @@ final class ProfileService {
     // MARK: - Private methods
     private func makeProfileRequest(with token: String) -> URLRequest? {
         guard let url = URL(string:  AuthorizationConstants.defaultBaseURLString + AuthorizationConstants.API.userProfile) else {
-            print("[ProfileService.makeProfileRequest] failed to create URL")
+            logger.error("[ProfileService.makeProfileRequest] failed to create URL")
             
             return nil
         }

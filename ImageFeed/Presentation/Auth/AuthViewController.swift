@@ -14,6 +14,7 @@ final class AuthViewController: UIViewController {
     
     // MARK: - Private properties
     private lazy var tokenStorage = OAuth2TokenStorage.shared
+    private lazy var logger = AppLogger.shared
     
     // MARK: - Lifecycle methods
     override func viewDidLoad() {
@@ -80,7 +81,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 delegate?.didAuthenticate(self)
             case .failure(let error):
                 self.showErrorAlert()
-                print("[AuthViewController.webViewViewController] Error: \(error.localizedDescription)")
+                self.logger.error("[AuthViewController.webViewViewController] Error: \(error.localizedDescription)")
             }
         }
     }

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
@@ -88,6 +89,8 @@ final class ProfileViewController: UIViewController {
     
     // MARK: - Private methods
     private func setElements() {
+        avatarImage.image = UIImage(resource: .tabProfileActive)
+        
         view.backgroundColor = .ypBlack
         
         view.addSubview(avatarImage)
@@ -137,9 +140,13 @@ final class ProfileViewController: UIViewController {
     
     private func updateAvatar() {
         guard let profileAvatarURL = profileImageService.profileAvatarURL,
-              let url = URL(string: profileAvatarURL) else {
-            return
-        }
+              let url = URL(string: profileAvatarURL) else { return }
+        
+        let placeholderImage = UIImage(resource: .tabProfileActive)
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: Constants.avatarImageSize))
+        
+        avatarImage.kf.indicatorType = .activity
+        avatarImage.kf.setImage(with: url, placeholder: placeholderImage)
     }
 }
 

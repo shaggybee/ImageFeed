@@ -17,6 +17,7 @@ final class ProfileImageService {
     
     private lazy var tokenStorage = OAuth2TokenStorage.shared
     private lazy var notificationCenter = NotificationCenter.default
+    private lazy var logger = AppLogger.shared
     
     private init() {}
     
@@ -25,14 +26,14 @@ final class ProfileImageService {
         task?.cancel()
         
         guard let token = tokenStorage.token, !token.isEmpty else {
-            print("[ProfileImageService.fetchProfileImage] authorization token missing or contains an empty string")
+            logger.error("[ProfileImageService.fetchProfileImage] authorization token missing or contains an empty string")
             completion(.failure(NetworkError.invalidRequest))
             
             return
         }
         
         guard let request = makeProfileImageRequest(for: username, with: token) else {
-            print("[ProfileImageService.fetchProfileImage] request was not generated for fetch profile")
+            logger.error("[ProfileImageService.fetchProfileImage] request was not generated for fetch profile")
             completion(.failure(NetworkError.invalidRequest))
             
             return
@@ -52,7 +53,7 @@ final class ProfileImageService {
                     object: self,
                     userInfo: ["URL": self.profileAvatarURL ?? ""])
             case .failure(let error):
-                print("[ProfileImageService.fetchProfileImage] request ended with an error: \(error.localizedDescription)")
+                self.logger.error("[ProfileImageService.fetchProfileImage] request ended with an error: \(error.localizedDescription)")
                 completion(.failure(error))
             }
             
@@ -66,7 +67,7 @@ final class ProfileImageService {
     // MARK: - Private methods
     private func makeProfileImageRequest(for username: String, with token: String) -> URLRequest? {
         guard let url = URL(string: AuthorizationConstants.defaultBaseURLString + AuthorizationConstants.API.users + "/\(username)") else {
-            print("[ProfileImageService.makeProfileImageRequest] failed to create URL")
+            logger.error("[ProfileImageService.makeProfileImageRequest] failed to create URL")
             
             return nil
         }

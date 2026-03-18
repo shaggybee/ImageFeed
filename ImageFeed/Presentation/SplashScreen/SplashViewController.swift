@@ -12,6 +12,7 @@ final class SplashViewController: UIViewController {
     private lazy var tokenStorage = OAuth2TokenStorage.shared
     private lazy var profileService = ProfileService.shared
     private lazy var profileImageService = ProfileImageService.shared
+    private lazy var logger = AppLogger.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,7 +77,7 @@ final class SplashViewController: UIViewController {
                 
                 switchToTabBarController()
             case .failure(let error):
-                print("[SplashViewController.fetchProfile] Error: \(error)")
+                self.logger.error("[SplashViewController.fetchProfile] Error: \(error)")
                 break
             }
         }

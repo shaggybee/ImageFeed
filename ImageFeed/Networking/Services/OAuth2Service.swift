@@ -13,6 +13,7 @@ final class OAuth2Service {
     // MARK: - Private properties
     private var lastCode: String?
     private var task: URLSessionTask?
+    private lazy var logger = AppLogger.shared
     
     private init() {}
     
@@ -34,7 +35,7 @@ final class OAuth2Service {
         lastCode = code
         
         guard let request = makeOAuthTokenRequest(with: code) else {
-            print("[OAuth2Service.fetchOAuthToken] request was not generated for fetch auth token")
+            logger.error("[OAuth2Service.fetchOAuthToken] request was not generated for fetch auth token")
             completion(.failure(NetworkError.invalidRequest))
             
             return
@@ -50,7 +51,7 @@ final class OAuth2Service {
                         
                         completion(.success(accessToken))
                     case .failure(let error):
-                        print("[OAuth2Service.fetchOAuthToken] request ended with an error: \(error.localizedDescription)")
+                        self.logger.error("[OAuth2Service.fetchOAuthToken] request ended with an error: \(error.localizedDescription)")
                         completion(.failure(error))
                     }
                     
@@ -66,7 +67,7 @@ final class OAuth2Service {
     // MARK: - Private methods
     private func makeOAuthTokenRequest(with code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: AuthorizationConstants.tokenURL) else {
-            print("[OAuth2Service.makeOAuthTokenRequest] failed to create URLComponents")
+            logger.error("[OAuth2Service.makeOAuthTokenRequest] failed to create URLComponents")
             return nil
         }
         
@@ -79,7 +80,7 @@ final class OAuth2Service {
         ]
         
         guard let authTokenUrl = urlComponents.url else {
-            print("[OAuth2Service.makeOAuthTokenRequest] failed to get URL from URLComponents")
+            logger.error("[OAuth2Service.makeOAuthTokenRequest] failed to get URL from URLComponents")
             return nil
         }
         
