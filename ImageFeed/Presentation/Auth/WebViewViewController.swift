@@ -8,15 +8,25 @@
 import WebKit
 
 final class WebViewViewController: UIViewController {
-    // MARK: - IBOutlets
-    @IBOutlet private weak var webView: WKWebView!
-    @IBOutlet private weak var progressView: UIProgressView!
-    
     //MARK: - Public properties
     weak var delegate: WebViewViewControllerDelegate?
     
     // MARK: - Private properties
     private var estimatedProgressObservation: NSKeyValueObservation?
+    
+    private lazy var webView: WKWebView = {
+        let webView = WKWebView()
+        
+        return webView
+    }().forAutoLayout
+    
+    private lazy var progressView: UIProgressView = {
+        let progressView = UIProgressView()
+        
+        progressView.tintColor = .ypBlack
+        
+        return progressView
+    }().forAutoLayout
     
     // MARK: - Lifecycle methods
     override func viewDidLoad() {
@@ -24,6 +34,7 @@ final class WebViewViewController: UIViewController {
         
         webView.navigationDelegate = self
         
+        setElements()
         loadAuthView()
         updateProgress()
     }
@@ -41,8 +52,30 @@ final class WebViewViewController: UIViewController {
                  self.updateProgress()
              })
     }
-
+    
     // MARK: - Private methods
+    private func setElements() {
+        view.backgroundColor = .white
+        
+        view.addSubview(webView)
+        view.addSubview(progressView)
+        
+        setConstraints()
+    }
+    
+    private func setConstraints() {
+        NSLayoutConstraint.activate([
+            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            progressView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            progressView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            progressView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        ])
+    }
+    
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: AuthorizationConstants.authorizeURLString) else {
             return

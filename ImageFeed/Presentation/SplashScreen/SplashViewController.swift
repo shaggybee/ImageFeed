@@ -53,15 +53,7 @@ final class SplashViewController: UIViewController {
     }
     
     private func presentAuthViewController() {
-        let authViewController = UIStoryboard(name: Constants.storyboardName, bundle: .main)
-            .instantiateViewController(identifier: Constants.authViewControllerIdentifier)
-        
-        guard let authViewController = authViewController as? AuthViewController else {
-            assertionFailure("Failed to obtain AuthViewController")
-
-            return
-        }
-        
+        let authViewController = AuthViewController()
         authViewController.delegate = self
         
         let navigationController = UINavigationController(rootViewController: authViewController)
@@ -75,7 +67,6 @@ final class SplashViewController: UIViewController {
               let window = windowScene.windows.first else
         {
             assertionFailure("Invalid window configuration")
-            
             return
         }
         
@@ -118,6 +109,5 @@ private extension SplashViewController {
     enum Constants {
         static let storyboardName = "Main"
         static let tabBarViewControllerIdentifier = "TabBarViewController"
-        static let authViewControllerIdentifier = "AuthViewController"
     }
 }
