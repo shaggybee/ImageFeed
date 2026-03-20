@@ -36,7 +36,7 @@ final class AuthViewController: UIViewController {
         
         button.addTarget(
             self,
-            action: #selector(loginDidTap),
+            action: #selector(didTapLogin),
             for: .touchUpInside)
         
         return button
@@ -50,7 +50,7 @@ final class AuthViewController: UIViewController {
     }
     
     // MARK: - Private methods
-    @objc private func loginDidTap() {
+    @objc private func didTapLogin() {
         showWebViewController()
     }
 

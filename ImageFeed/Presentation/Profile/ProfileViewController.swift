@@ -150,6 +150,7 @@ final class ProfileViewController: UIViewController {
     }
 }
 
+// MARK: - Constants
 private extension ProfileViewController {
     enum Constants {
         static let logoutButtonSize: CGFloat = 44
