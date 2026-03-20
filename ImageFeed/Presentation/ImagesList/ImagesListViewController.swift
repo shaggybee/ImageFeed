@@ -9,25 +9,48 @@ import UIKit
 
 final class ImagesListViewController: UIViewController {
     
-    // MARK: - IBOutlets
-    @IBOutlet private weak var tableView: UITableView!
-    
     // MARK: - Private properties
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        
+        tableView.contentInset = Constants.tableContentInset
+        tableView.separatorColor = .ypBlack
+        
+        return tableView
+    }().forAutoLayout
+    
     private let photosNames: [String] = (0..<20).map{ String($0) }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        configTable()
+     
+        setElements()
     }
     
     // MARK: - Private methods
+    private func setElements() {
+        view.addSubview(tableView)
+        
+        tableView.backgroundColor = .ypBlack
+        
+        setConstraints()
+        configTable()
+    }
+    
+    private func setConstraints() {
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+    
     private func configTable() {
         tableView.dataSource = self
         tableView.delegate = self
-
-        tableView.contentInset = Constants.tableContentInset
+        tableView.register(ImagesListCell.self, forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
     }
     
     private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {

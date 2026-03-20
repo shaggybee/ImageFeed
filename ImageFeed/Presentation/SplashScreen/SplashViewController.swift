@@ -69,11 +69,8 @@ final class SplashViewController: UIViewController {
             assertionFailure("Invalid window configuration")
             return
         }
-        
-        let tabBarController = UIStoryboard(name: Constants.storyboardName, bundle: .main)
-            .instantiateViewController(identifier: Constants.tabBarViewControllerIdentifier)
-        
-        window.rootViewController = tabBarController
+
+        window.rootViewController = TabBarController()
     }
     
     private func fetchProfile(token: String) {
@@ -101,13 +98,5 @@ final class SplashViewController: UIViewController {
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
         vc.dismiss(animated: true)
-    }
-}
-
-// MARK: - Constants
-private extension SplashViewController {
-    enum Constants {
-        static let storyboardName = "Main"
-        static let tabBarViewControllerIdentifier = "TabBarViewController"
     }
 }

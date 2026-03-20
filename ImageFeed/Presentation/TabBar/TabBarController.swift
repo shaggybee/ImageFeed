@@ -8,13 +8,27 @@
 import UIKit
 
 final class TabBarController: UITabBarController {
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        let storyboard = UIStoryboard(name: Constants.storyboardName, bundle: .main)
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        let imagesListViewController = storyboard.instantiateViewController(
-            withIdentifier: Constants.imagesListViewControllerIdentifier
-        )
+        configTabBar()
+    }
+    
+    //MARK: - Private methods
+    private func configTabBar() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .ypBlack
+
+        tabBar.standardAppearance = appearance
+        tabBar.isTranslucent = false
+        tabBar.tintColor = .ypWhite
+        
+        let imagesListViewController = ImagesListViewController()
+        imagesListViewController.tabBarItem = UITabBarItem(
+            title: nil,
+            image: UIImage(resource: .tabEditorialActive),
+            selectedImage: nil)
         
         let profileViewController = ProfileViewController()
         profileViewController.tabBarItem = UITabBarItem(
@@ -26,10 +40,3 @@ final class TabBarController: UITabBarController {
     }
 }
 
-// MARK: - Constants
-private extension TabBarController {
-    enum Constants {
-        static let storyboardName = "Main"
-        static let imagesListViewControllerIdentifier = "ImagesListViewController"
-    }
-}
