@@ -21,7 +21,6 @@ final class TabBarController: UITabBarController {
         appearance.backgroundColor = .ypBlack
 
         tabBar.standardAppearance = appearance
-        tabBar.isTranslucent = false
         tabBar.tintColor = .ypWhite
         
         let imagesListViewController = ImagesListViewController()

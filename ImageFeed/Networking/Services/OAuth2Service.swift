@@ -42,23 +42,23 @@ final class OAuth2Service {
         }
         
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
-                DispatchQueue.main.async {
-                    guard let self else { return }
+            DispatchQueue.main.async {
+                guard let self else { return }
+                
+                switch result {
+                case .success(let data):
+                    let accessToken = data.accessToken
                     
-                    switch result {
-                    case .success(let data):
-                        let accessToken = data.accessToken
-                        
-                        completion(.success(accessToken))
-                    case .failure(let error):
-                        self.logger.error("[OAuth2Service.fetchOAuthToken] request ended with an error: \(error.localizedDescription)")
-                        completion(.failure(error))
-                    }
-                    
-                    self.lastCode = nil
-                    self.task = nil
+                    completion(.success(accessToken))
+                case .failure(let error):
+                    self.logger.error("[OAuth2Service.fetchOAuthToken] request ended with an error: \(error.localizedDescription)")
+                    completion(.failure(error))
                 }
+                
+                self.lastCode = nil
+                self.task = nil
             }
+        }
         
         self.task = task
         task.resume()

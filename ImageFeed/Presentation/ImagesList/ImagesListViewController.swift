@@ -30,9 +30,9 @@ final class ImagesListViewController: UIViewController {
     
     // MARK: - Private methods
     private func setElements() {
-        view.addSubview(tableView)
-        
         tableView.backgroundColor = .ypBlack
+        
+        view.addSubview(tableView)
         
         setConstraints()
         configTable()
