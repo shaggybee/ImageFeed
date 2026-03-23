@@ -10,32 +10,56 @@ import UIKit
 final class SplashViewController: UIViewController {
     // MARK: - Private properties
     private lazy var tokenStorage = OAuth2TokenStorage.shared
+    private lazy var profileService = ProfileService.shared
+    private lazy var profileImageService = ProfileImageService.shared
+    private lazy var logger = AppLogger.shared
+    
+    private lazy var logoImage: UIImageView = {
+        let imageView = UIImageView(image: UIImage(resource: .launchScreenLogo))
+        
+        return imageView
+    }().forAutoLayout
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setElements()
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if (tokenStorage.token ?? "").isEmpty {
-            performSegue(withIdentifier: Constants.showAuthViewSegueIdentifier, sender: nil)
+        if let token = tokenStorage.token, !token.isEmpty {
+            fetchProfile(token: token)
         } else {
-            switchToTabBarController()
+            presentAuthViewController()
         }
     }
     
-    // MARK: - Overrides
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier != Constants.showAuthViewSegueIdentifier {
-            super.prepare(for: segue, sender: sender)
-            
-            return
-        }
+    // MARK: - Private methods
+    private func setElements() {
+        view.backgroundColor = .ypBlack
+        view.addSubview(logoImage)
         
-        if let navigationController = segue.destination as? UINavigationController,
-           let authViewController = navigationController.viewControllers.first as? AuthViewController
-        {
-            authViewController.delegate = self
-        } else {
-            assertionFailure("Failed to prepare for \(Constants.showAuthViewSegueIdentifier)")
-        }
+        UIBlockingProgressHUD.configProgressHUD()
+        setupConstraints()
+    }
+    
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            logoImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logoImage.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
+    private func presentAuthViewController() {
+        let authViewController = AuthViewController()
+        authViewController.delegate = self
+        
+        let navigationController = UINavigationController(rootViewController: authViewController)
+        navigationController.modalPresentationStyle = .fullScreen
+        
+        present(navigationController, animated: true)
     }
     
     private func switchToTabBarController() {
@@ -43,14 +67,30 @@ final class SplashViewController: UIViewController {
               let window = windowScene.windows.first else
         {
             assertionFailure("Invalid window configuration")
-            
             return
         }
+
+        window.rootViewController = TabBarController()
+    }
+    
+    private func fetchProfile(token: String) {
+        UIBlockingProgressHUD.show()
         
-        let tabBarController = UIStoryboard(name: Constants.storyboardName, bundle: .main)
-            .instantiateViewController(identifier: Constants.tabBarViewControllerIdentifier)
-        
-        window.rootViewController = tabBarController
+        profileService.fetchProfile(token) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard let self else { return }
+            
+            switch result {
+            case .success(let profile):
+                profileImageService.fetchProfileImage(for: profile.username) { _ in }
+                
+                switchToTabBarController()
+            case .failure(let error):
+                self.logger.error("[SplashViewController.fetchProfile] Error: \(error)")
+                break
+            }
+        }
     }
 }
 
@@ -58,15 +98,5 @@ final class SplashViewController: UIViewController {
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
         vc.dismiss(animated: true)
-        switchToTabBarController()
-    }
-}
-
-// MARK: - Constants
-private extension SplashViewController {
-    enum Constants {
-        static let showAuthViewSegueIdentifier = "showAuthView"
-        static let storyboardName = "Main"
-        static let tabBarViewControllerIdentifier = "TabBarViewController"
     }
 }

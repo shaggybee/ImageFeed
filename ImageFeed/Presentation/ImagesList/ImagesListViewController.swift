@@ -9,25 +9,48 @@ import UIKit
 
 final class ImagesListViewController: UIViewController {
     
-    // MARK: - IBOutlets
-    @IBOutlet private weak var tableView: UITableView!
-    
     // MARK: - Private properties
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        
+        tableView.contentInset = Constants.tableContentInset
+        tableView.separatorColor = .ypBlack
+        
+        return tableView
+    }().forAutoLayout
+    
     private let photosNames: [String] = (0..<20).map{ String($0) }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        configTable()
+     
+        setElements()
     }
     
     // MARK: - Private methods
+    private func setElements() {
+        tableView.backgroundColor = .ypBlack
+        
+        view.addSubview(tableView)
+        
+        setConstraints()
+        configTable()
+    }
+    
+    private func setConstraints() {
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+    
     private func configTable() {
         tableView.dataSource = self
         tableView.delegate = self
-
-        tableView.contentInset = Constants.tableContentInset
+        tableView.register(ImagesListCell.self, forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
     }
     
     private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
@@ -45,7 +68,12 @@ final class ImagesListViewController: UIViewController {
 // MARK: - UITableViewDelegate
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: Constants.segueIdentifierForSignalImage, sender: indexPath)
+        let singleImageViewController = SingleImageViewController()
+        
+        singleImageViewController.modalPresentationStyle = .fullScreen
+        singleImageViewController.image = UIImage(named: photosNames[indexPath.row])
+        
+        present(singleImageViewController, animated: true)
     }
 }
 
@@ -84,24 +112,6 @@ extension ImagesListViewController: UITableViewDataSource {
     }
 }
 
-extension ImagesListViewController {
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == Constants.segueIdentifierForSignalImage {
-            guard
-                let viewController = segue.destination as? SingleImageViewController,
-                let indexPath = sender as? IndexPath
-            else {
-                assertionFailure("Invalid segue destination")
-                return
-            }
-            
-            viewController.image = UIImage(named: photosNames[indexPath.row])
-        } else {
-            super.prepare(for: segue, sender: sender)
-        }
-    }
-}
-
 // MARK: - Constants
 extension ImagesListViewController {
     private enum Constants {
@@ -109,7 +119,5 @@ extension ImagesListViewController {
         
         static let cellImageInset = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         static let tableContentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
-        
-        static let segueIdentifierForSignalImage = "ShowSingleImage"
     }
 }

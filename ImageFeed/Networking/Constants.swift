@@ -15,6 +15,11 @@ enum AuthorizationConstants {
     static let tokenURL = "https://unsplash.com/oauth/token"
     static let authorizeRelativeCodeAddress = "/oauth/authorize/native"
     
+    enum API {
+        static let userProfile = "/me"
+        static let users = "/users"
+    }
+    
     enum QueryItem {
         static let clientId = "client_id"
         static let clientSecret = "client_secret"
