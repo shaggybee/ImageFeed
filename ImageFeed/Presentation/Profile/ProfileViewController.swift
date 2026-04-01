@@ -15,7 +15,6 @@ final class ProfileViewController: UIViewController {
     private lazy var profileImageService = ProfileImageService.shared
     private lazy var notificationCenter = NotificationCenter.default
     
-    // MARK: - Private properties
     private var profileImageServiceObserver: NSObjectProtocol?
     
     private lazy var avatarImage: UIImageView = {

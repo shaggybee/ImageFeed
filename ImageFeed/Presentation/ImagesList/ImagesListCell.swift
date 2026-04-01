@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     // MARK: - Static Properties
@@ -67,19 +68,25 @@ final class ImagesListCell: UITableViewCell {
         }
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        cellImage.kf.cancelDownloadTask()
+    }
+    
     // MARK: - Public methods
-    func config(with imageName: String, isLiked: Bool) {
-        guard let image = UIImage(named: imageName) else {
-            return
-        }
+    func config(with photo: Photo, isLiked: Bool) {
+        cellImage.kf.indicatorType = .activity
+        cellImage.kf.setImage(
+            with: URL(string: photo.thumbImageURL),
+            placeholder: UIImage(resource: .cellImageStub))
         
         let imageButton = isLiked
             ? UIImage(resource: .favoritesActive)
             : UIImage(resource: .favoritesNoActive)
         
-        cellImage.image = image
         likeButton.setImage(imageButton, for: .normal)
-        dateLabel.text = today.longDateString
+        dateLabel.text = photo.createdAt?.longDateString
     }
     
     // MARK: - Private methods

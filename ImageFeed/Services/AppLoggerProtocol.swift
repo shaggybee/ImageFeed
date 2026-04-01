@@ -9,4 +9,5 @@ import Foundation
 
 protocol AppLoggerProtocol {
     func error(_ message: String)
+    func info(_ message: String)
 }

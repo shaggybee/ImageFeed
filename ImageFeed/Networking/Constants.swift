@@ -15,11 +15,6 @@ enum AuthorizationConstants {
     static let tokenURL = "https://unsplash.com/oauth/token"
     static let authorizeRelativeCodeAddress = "/oauth/authorize/native"
     
-    enum API {
-        static let userProfile = "/me"
-        static let users = "/users"
-    }
-    
     enum QueryItem {
         static let clientId = "client_id"
         static let clientSecret = "client_secret"
@@ -33,5 +28,22 @@ enum AuthorizationConstants {
     enum QueryItemValue {
         static let code = "code"
         static let authorizationCode = "authorization_code"
+    }
+}
+
+enum NetworkingConstants {
+    enum API {
+        static let userProfile = "/me"
+        static let users = "/users"
+        static let photos = "/photos"
+    }
+    
+    enum QueryItem {
+        static let page = "page"
+        static let perPage = "per_page"
+    }
+    
+    enum Pagination {
+        static let defaultPerPage = 10
     }
 }
