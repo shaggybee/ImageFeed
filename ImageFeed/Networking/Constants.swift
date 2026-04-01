@@ -32,10 +32,13 @@ enum AuthorizationConstants {
 }
 
 enum NetworkingConstants {
+    static let idStub = ":id"
+    
     enum API {
         static let userProfile = "/me"
         static let users = "/users"
         static let photos = "/photos"
+        static let photoLikeChange = "/photos/\(idStub)/like"
     }
     
     enum QueryItem {

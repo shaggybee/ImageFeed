@@ -63,10 +63,8 @@ final class ImagesListViewController: UIViewController {
     private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         guard let photo = photos[safe: indexPath.row] else { return }
         
-        cell.config(
-            with: photo,
-            isLiked: indexPath.row % 2 == 0
-        )
+        cell.delegate = self
+        cell.config(with: photo)
     }
     
     private func fetchPhotos() {
@@ -74,11 +72,11 @@ final class ImagesListViewController: UIViewController {
             guard let self else { return }
             
             switch result {
-            case .success(let photosCount):
+            case .success(let newPhotos):
                 var text = "[ImagesListViewController.fetchPhotos] "
-                text += photosCount == 0
-                    ? "All available photos have been uploaded, no new images available"
-                    : "\(photosCount) photos uploaded"
+                text += newPhotos.isEmpty
+                    ? "All available photos have been uploaded, no new photos available"
+                    : "\(newPhotos.count) photos uploaded"
                 
                 logger.info(text)
             case .failure(let error):
@@ -136,7 +134,7 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        imagesListService.photosCount
+        photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -164,6 +162,53 @@ extension ImagesListViewController: UITableViewDataSource {
     }
 }
 
+//MARK: - ImagesListCellDelegate
+extension ImagesListViewController: ImagesListCellDelegate {
+    func didTapLike(for cell: ImagesListCell) {
+        guard let rowIndex = tableView.indexPath(for: cell)?.row,
+              let photo = photos[safe: rowIndex] else { return }
+        
+        UIBlockingProgressHUD.show()
+    
+        imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+            DispatchQueue.main.async {
+                UIBlockingProgressHUD.dismiss()
+                
+                guard let self else { return }
+                
+                switch result {
+                case .success:
+                    self.photos = self.imagesListService.photos
+                    
+                    if self.photos[rowIndex].id == photo.id {
+                        cell.setIsLiked(self.photos[rowIndex].isLiked)
+                    }
+                case .failure(let error):
+                    self.showErrorAlert(for: !photo.isLiked)
+                    
+                    self.logger.error("[ImagesListViewController.changeLike] Error: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    private func showErrorAlert(for isLike: Bool) {
+        let alert = UIAlertController(
+            title: Constants.Alert.title,
+            message: isLike
+                ? Constants.Alert.failedToLike
+                : Constants.Alert.failedToRemoveLike,
+            preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: Constants.Alert.buttonText, style: .default) { _ in
+            alert.dismiss(animated: true)
+        }
+        
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
+}
+
 // MARK: - Constants
 extension ImagesListViewController {
     private enum Constants {
@@ -171,5 +216,12 @@ extension ImagesListViewController {
         
         static let cellImageInset = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         static let tableContentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+        
+        enum Alert {
+            static let title = "Что-то пошло не так"
+            static let failedToLike = "Не удалось поставить лайк"
+            static let failedToRemoveLike = "Не удалось снять лайк"
+            static let buttonText = "Ok"
+        }
     }
 }
