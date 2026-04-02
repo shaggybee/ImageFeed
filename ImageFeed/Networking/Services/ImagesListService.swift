@@ -27,6 +27,11 @@ final class ImagesListService {
     private init() {}
     
     // MARK: - Public methods
+    func reset() {
+        photos = []
+        lastLoadedPage = nil
+    }
+    
     func changeLike(
         photoId: String,
         isLike: Bool,

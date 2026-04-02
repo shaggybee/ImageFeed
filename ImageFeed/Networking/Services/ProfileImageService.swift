@@ -22,6 +22,10 @@ final class ProfileImageService {
     private init() {}
     
     // MARK: - Public methods
+    func reset() {
+        profileAvatarURL = nil
+    }
+    
     func fetchProfileImage(for username: String, completion: @escaping (Result<String, Error>) -> Void) {
         task?.cancel()
         

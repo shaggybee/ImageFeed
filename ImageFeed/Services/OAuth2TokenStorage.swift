@@ -19,6 +19,10 @@ final class OAuth2TokenStorage {
 
 // MARK: - OAuth2TokenStorageProtocol
 extension OAuth2TokenStorage: OAuth2TokenStorageProtocol {
+    func reset() {
+        token = nil
+    }
+    
     var token: String? {
         get {
             storage.string(forKey: Constants.storageAccessTokenKey)

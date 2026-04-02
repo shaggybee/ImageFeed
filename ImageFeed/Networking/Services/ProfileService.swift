@@ -19,6 +19,10 @@ final class ProfileService {
     private init() {}
     
     // MARK: - Public methods
+    func reset() {
+        profile = nil
+    }
+    
     func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         task?.cancel()
         
