@@ -187,7 +187,7 @@ final class ImagesListService {
                     height: photo.height),
                 createdAt: dateFormatterForISO8601.date(from: photo.createdAt),
                 welcomeDescription: photo.description,
-                thumbImageURL: photo.urls.thumb,
+                thumbImageURL: photo.urls.small,
                 largeImageURL: photo.urls.full,
                 isLiked: photo.likedByUser
             )

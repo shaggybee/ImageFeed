@@ -9,4 +9,5 @@ struct PhotoURLsResult: Decodable {
     let thumb: String
     let full: String
     let regular: String
+    let small: String
 }

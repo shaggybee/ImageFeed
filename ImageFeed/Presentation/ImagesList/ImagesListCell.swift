@@ -109,8 +109,8 @@ final class ImagesListCell: UITableViewCell {
         selectionStyle = .none
         
         labelContainerView.addSubview(dateLabel)
-        addSubview(likeButton)
         addSubview(cellImage)
+        addSubview(likeButton)
         addSubview(labelContainerView)
         
         setConstraints()

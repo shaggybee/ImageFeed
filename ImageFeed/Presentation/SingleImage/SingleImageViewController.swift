@@ -6,23 +6,15 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class SingleImageViewController: UIViewController {
     
-    // MARK: - Public properties
-    var image: UIImage? {
-        didSet {
-            guard let image, isViewLoaded else { return }
-
-            configImageView(image)
-            rescaleImageInScrollView(image)
-            setCenterForImageInScrollView()
-        }
-    }
-
     // MARK: - Private properties
+    private var imageUrl: URL
+    
     private lazy var scrollView: UIScrollView = {
-       let scrollView = UIScrollView()
+        let scrollView = UIScrollView()
         
         return scrollView
     }().forAutoLayout
@@ -52,6 +44,7 @@ final class SingleImageViewController: UIViewController {
     private lazy var sharingButton: UIButton = {
         let button = UIButton(type: .custom)
         
+        button.isEnabled = false
         button.backgroundColor = .ypBlack
         button.setImage(.shareButton, for: .normal)
         button.layer.cornerRadius = Constants.sharingButtonSize / 2
@@ -65,17 +58,22 @@ final class SingleImageViewController: UIViewController {
         return button
     }().forAutoLayout
     
+    init(imageUrl: URL) {
+        self.imageUrl = imageUrl
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setElements()
-        
-        guard let image else { return }
-        
-        configImageView(image)
-        rescaleImageInScrollView(image)
-        setCenterForImageInScrollView()
+        loadImage(with: imageUrl)
     }
     
     // MARK: - Private methods
@@ -84,7 +82,7 @@ final class SingleImageViewController: UIViewController {
     }
     
     @objc private func didTapSharingImage(_ sender: Any) {
-        guard let image else { return }
+        guard let image = imageView.image else { return }
         
         let shareSheet = UIActivityViewController(
             activityItems: [image],
@@ -123,7 +121,32 @@ final class SingleImageViewController: UIViewController {
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
-
+    
+    private func loadImage(with url: URL) {
+        UIBlockingProgressHUD.show()
+        
+        imageView.kf.setImage(with: url) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard let self else { return }
+            
+            switch result {
+            case .success(let imageResult):
+                setImage(imageResult.image)
+            case .failure:
+                showFailedLoadPhotoAlert(photoUrl: url)
+            }
+        }
+    }
+    
+    private func setImage(_ image: UIImage) {
+        configImageView(image)
+        rescaleImageInScrollView(image)
+        setCenterForImageInScrollView()
+        
+        sharingButton.isEnabled = true
+    }
+    
     private func configScrollView() {
         scrollView.delegate = self
         scrollView.minimumZoomScale = 0.1
@@ -140,7 +163,7 @@ final class SingleImageViewController: UIViewController {
         let maxZoomScale = scrollView.maximumZoomScale
         
         view.layoutIfNeeded()
-
+        
         let heightScale = scrollView.bounds.size.height / image.size.height
         let widthScale = scrollView.bounds.size.width / image.size.width
         let scale = min(maxZoomScale, max(minZoomScale, min(heightScale, widthScale)))
@@ -149,15 +172,52 @@ final class SingleImageViewController: UIViewController {
         scrollView.layoutIfNeeded()
     }
     
-    private func setCenterForImageInScrollView() {
-        let insetX = max(0, (scrollView.bounds.size.width - scrollView.contentSize.width) / 2)
-        let insetY = max(0, (scrollView.bounds.size.height - scrollView.contentSize.height) / 2)
+    private func setCenterForImageInScrollView(_ triggeredByZoomEnd: Bool = false) {
+        let offsetX = (scrollView.bounds.size.width - scrollView.contentSize.width) / 2
+        let offsetY = (scrollView.bounds.size.height - scrollView.contentSize.height) / 2
+        
+        let insetX = max(0, offsetX)
+        let insetY = max(0, offsetY)
         
         scrollView.contentInset = UIEdgeInsets(
             top: insetY,
             left: insetX,
             bottom: insetY,
             right: insetX)
+        
+        if triggeredByZoomEnd { return }
+        
+        if offsetX < 0 {
+            scrollView.contentOffset.x = abs(offsetX)
+        }
+        
+        if offsetY < 0 {
+            scrollView.contentOffset.y = abs(offsetY)
+        }
+    }
+    
+    private func showFailedLoadPhotoAlert(photoUrl: URL) {
+        let alert = UIAlertController(
+            title: Constants.Alert.title,
+            message: Constants.Alert.subtitle,
+            preferredStyle: .alert)
+        
+        let repeatAction = UIAlertAction(
+            title: Constants.Alert.repeatButtonText,
+            style: .default) { [weak self] _ in
+                self?.loadImage(with: photoUrl)
+            }
+        
+        let cancelAction = UIAlertAction(
+            title: Constants.Alert.cancelButtonText,
+            style: .cancel) { [weak self] _ in
+                self?.dismiss(animated: true)
+            }
+        
+        alert.addAction(cancelAction)
+        alert.addAction(repeatAction)
+
+        present(alert, animated: true, completion: nil)
     }
 }
 
@@ -168,7 +228,7 @@ extension SingleImageViewController: UIScrollViewDelegate {
     }
     
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        setCenterForImageInScrollView()
+        setCenterForImageInScrollView(true)
     }
 }
 
@@ -179,5 +239,12 @@ private extension SingleImageViewController {
         static let backwardButtonSize: CGFloat = 44
         static let paddingXS: CGFloat = 8
         static let paddingS: CGFloat = 16
+        
+        enum Alert {
+            static let title = "Не удалось загрузить изображение"
+            static let subtitle = "Попробовать ещё раз?"
+            static let repeatButtonText = "Повторить"
+            static let cancelButtonText = "Отменить"
+        }
     }
 }
