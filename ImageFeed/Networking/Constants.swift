@@ -42,13 +42,13 @@ enum NetworkingConstants {
         var fullPath: String {
             switch self {
             case .userProfile:
-                return baseApiURLString + "/me"
+                baseApiURLString + "/me"
             case .userInfo(let username):
-                return baseApiURLString + "/users/\(username)"
+                baseApiURLString + "/users/\(username)"
             case .photos:
-                return baseApiURLString + "/photos"
+                baseApiURLString + "/photos"
             case .photoLike(let id):
-                return baseApiURLString + "/photos/\(id)/like"
+                baseApiURLString + "/photos/\(id)/like"
             }
         }
     }

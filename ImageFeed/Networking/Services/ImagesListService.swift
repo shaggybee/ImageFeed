@@ -10,7 +10,7 @@ import CoreGraphics
 
 final class ImagesListService {
     static let shared = ImagesListService()
-    static let didChangeNotification = Notification.Name(rawValue: Constants.imagesListServiceDidChangeNotification)
+    static let didChangeNotification = Notification.Name(Constants.imagesListServiceDidChangeNotification)
     
     // MARK: - Public properties
     var photosCount: Int { photos.count }
@@ -38,7 +38,7 @@ final class ImagesListService {
         isLike: Bool,
         _ completion: @escaping (Result<Void, Error>) -> Void)
     {
-        if changeLikeTask != nil { return }
+        guard changeLikeTask == nil else { return }
         
         guard let token = tokenStorage.token, !token.isEmpty else {
             logger.error("[ImagesListService.changeLike] authorization token missing or contains an empty string")
@@ -78,7 +78,7 @@ final class ImagesListService {
     }
     
     func fetchPhotosNextPage(completion: @escaping (Result<[Photo], Error>) -> Void) {
-        if loadPhotosTask != nil { return }
+        guard loadPhotosTask == nil else { return }
         
         guard let token = tokenStorage.token, !token.isEmpty else {
             logger.error("[ImagesListService.fetchPhotosNextPage] authorization token missing or contains an empty string")
