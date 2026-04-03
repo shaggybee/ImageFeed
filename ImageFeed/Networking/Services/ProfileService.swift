@@ -62,7 +62,7 @@ final class ProfileService {
     
     // MARK: - Private methods
     private func makeProfileRequest(with token: String) -> URLRequest? {
-        guard let url = URL(string:  AuthorizationConstants.defaultBaseURLString + NetworkingConstants.API.userProfile) else {
+        guard let url = URL(string: NetworkingConstants.API.userProfile.fullPath) else {
             logger.error("[ProfileService.makeProfileRequest] failed to create URL")
             
             return nil

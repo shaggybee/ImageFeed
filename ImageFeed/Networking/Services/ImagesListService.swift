@@ -17,7 +17,8 @@ final class ImagesListService {
     
     // MARK: - Private properties
     private(set) var photos: [Photo] = []
-    private var task: URLSessionTask?
+    private var loadPhotosTask: URLSessionTask?
+    private var changeLikeTask: URLSessionTask?
     private var lastLoadedPage: Int?
     private lazy var logger = AppLogger.shared
     private lazy var tokenStorage = OAuth2TokenStorage.shared
@@ -37,6 +38,8 @@ final class ImagesListService {
         isLike: Bool,
         _ completion: @escaping (Result<Void, Error>) -> Void)
     {
+        if changeLikeTask != nil { return }
+        
         guard let token = tokenStorage.token, !token.isEmpty else {
             logger.error("[ImagesListService.changeLike] authorization token missing or contains an empty string")
             completion(.failure(NetworkError.invalidRequest))
@@ -51,22 +54,13 @@ final class ImagesListService {
             return
         }
         
-        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<UpdatePhotoResult, Error>) in
+        changeLikeTask = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<UpdatePhotoResult, Error>) in
             guard let self else { return }
             
             switch result {
-            case .success:
-                if let index = photos.firstIndex(where: { $0.id == photoId }), let photo = photos[safe: index] {
-                    let newPhoto = Photo(
-                        id: photo.id,
-                        size: photo.size,
-                        createdAt: photo.createdAt,
-                        welcomeDescription: photo.welcomeDescription,
-                        thumbImageURL: photo.thumbImageURL,
-                        largeImageURL: photo.largeImageURL,
-                        isLiked: !photo.isLiked)
-                    
-                    photos[index] = newPhoto
+            case .success(let data):
+                if let index = photos.firstIndex(where: { $0.id == photoId }) {
+                    photos[index] = transform(photoResult: data.photo)
                 } else {
                     logger.info("[ImagesListService.changeLike] There are no photos with this ID in the list")
                 }
@@ -76,13 +70,15 @@ final class ImagesListService {
                 logger.error("[ImagesListService.changeLike] request ended with an error: \(error.localizedDescription)")
                 completion(.failure(error))
             }
+            
+            changeLikeTask = nil
         }
         
-        task.resume()
+        changeLikeTask?.resume()
     }
     
     func fetchPhotosNextPage(completion: @escaping (Result<[Photo], Error>) -> Void) {
-        if task != nil { return }
+        if loadPhotosTask != nil { return }
         
         guard let token = tokenStorage.token, !token.isEmpty else {
             logger.error("[ImagesListService.fetchPhotosNextPage] authorization token missing or contains an empty string")
@@ -100,20 +96,20 @@ final class ImagesListService {
             return
         }
         
-        task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
+        loadPhotosTask = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
             guard let self else { return }
             
             switch result {
             case .success(let data):
                 if data.isEmpty {
-                    task = nil
+                    loadPhotosTask = nil
                     
                     completion(.success([]))
                     
                     return
                 }
                 
-                let transformPhotos = transform(photoResult: data)
+                let transformPhotos = data.map { self.transform(photoResult: $0) }
                 
                 photos.append(contentsOf: transformPhotos)
                 lastLoadedPage = loadingPage
@@ -129,17 +125,15 @@ final class ImagesListService {
                 completion(.failure(error))
             }
             
-            task = nil
+            loadPhotosTask = nil
         }
         
-        task?.resume()
+        loadPhotosTask?.resume()
     }
     
     // MARK: - Private methods
     private func makeFetchPhotosRequest(for page: Int, with token: String) -> URLRequest? {
-        guard var urlComponents = URLComponents(
-            string: AuthorizationConstants.defaultBaseURLString +  NetworkingConstants.API.photos
-        ) else {
+        guard var urlComponents = URLComponents(string: NetworkingConstants.API.photos.fullPath) else {
             logger.error("[ImagesListService.makeFetchPhotosrequest] failed to create URLComponents")
             return nil
         }
@@ -166,9 +160,7 @@ final class ImagesListService {
     }
     
     private func makeChangeLikeRequest(photoId: String, isLike: Bool, with token: String) -> URLRequest? {
-        let api = NetworkingConstants.API.photoLikeChange.replacingOccurrences(of: NetworkingConstants.idStub, with: photoId)
-        
-        guard let url = URL(string: AuthorizationConstants.defaultBaseURLString + api) else {
+        guard let url = URL(string: NetworkingConstants.API.photoLike(id: photoId).fullPath) else {
             logger.error("[ImagesListService.makeChangeLikeRequest] failed to create URL")
             
             return nil
@@ -183,20 +175,18 @@ final class ImagesListService {
         return request
     }
     
-    private func transform(photoResult: [PhotoResult]) -> [Photo] {
-        photoResult.map { photo in
-            Photo(
-                id: photo.id,
-                size: CGSize(
-                    width: photo.width,
-                    height: photo.height),
-                createdAt: dateFormatterForISO8601.date(from: photo.createdAt),
-                welcomeDescription: photo.description,
-                thumbImageURL: photo.urls.small,
-                largeImageURL: photo.urls.full,
-                isLiked: photo.likedByUser
-            )
-        }
+    private func transform(photoResult: PhotoResult) -> Photo {
+        Photo(
+            id: photoResult.id,
+            size: CGSize(
+                width: photoResult.width,
+                height: photoResult.height),
+            createdAt: dateFormatterForISO8601.date(from: photoResult.createdAt),
+            welcomeDescription: photoResult.description,
+            thumbImageURL: photoResult.urls.small,
+            largeImageURL: photoResult.urls.full,
+            isLiked: photoResult.likedByUser
+        )
     }
 }
 

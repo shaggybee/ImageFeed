@@ -70,7 +70,7 @@ final class ProfileImageService {
     
     // MARK: - Private methods
     private func makeProfileImageRequest(for username: String, with token: String) -> URLRequest? {
-        guard let url = URL(string: AuthorizationConstants.defaultBaseURLString + NetworkingConstants.API.users + "/\(username)") else {
+        guard let url = URL(string: NetworkingConstants.API.userInfo(username: username).fullPath) else {
             logger.error("[ProfileImageService.makeProfileImageRequest] failed to create URL")
             
             return nil

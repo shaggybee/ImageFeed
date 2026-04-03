@@ -10,7 +10,6 @@ enum AuthorizationConstants {
     static let secretKey = "oWkXxNTv5kdSHzBkKSiACzBc_if9hNyeds3rF-j-COU"
     static let redirectURI = "urn:ietf:wg:oauth:2.0:oob"
     static let accessScope = "public+read_user+write_likes"
-    static let defaultBaseURLString = "https://api.unsplash.com"
     static let authorizeURLString = "https://unsplash.com/oauth/authorize"
     static let tokenURL = "https://unsplash.com/oauth/token"
     static let authorizeRelativeCodeAddress = "/oauth/authorize/native"
@@ -32,13 +31,26 @@ enum AuthorizationConstants {
 }
 
 enum NetworkingConstants {
-    static let idStub = ":id"
+    static let baseApiURLString = "https://api.unsplash.com"
     
     enum API {
-        static let userProfile = "/me"
-        static let users = "/users"
-        static let photos = "/photos"
-        static let photoLikeChange = "/photos/\(idStub)/like"
+        case userProfile
+        case userInfo(username: String)
+        case photos
+        case photoLike(id: String)
+        
+        var fullPath: String {
+            switch self {
+            case .userProfile:
+                return baseApiURLString + "/me"
+            case .userInfo(let username):
+                return baseApiURLString + "/users/\(username)"
+            case .photos:
+                return baseApiURLString + "/photos"
+            case .photoLike(let id):
+                return baseApiURLString + "/photos/\(id)/like"
+            }
+        }
     }
     
     enum QueryItem {

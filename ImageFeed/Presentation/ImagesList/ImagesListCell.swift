@@ -89,7 +89,7 @@ final class ImagesListCell: UITableViewCell {
             with: URL(string: photo.thumbImageURL),
             placeholder: UIImage(resource: .cellImageStub))
         
-        dateLabel.text = photo.createdAt?.longDateString
+        dateLabel.text = photo.createdAt?.longDateString ?? ""
         
         setIsLiked(photo.isLiked)
     }
