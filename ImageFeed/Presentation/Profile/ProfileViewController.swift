@@ -14,8 +14,8 @@ final class ProfileViewController: UIViewController {
     private lazy var profileService = ProfileService.shared
     private lazy var profileImageService = ProfileImageService.shared
     private lazy var notificationCenter = NotificationCenter.default
+    private lazy var profileLogoutService = ProfileLogoutService.shared
     
-    // MARK: - Private properties
     private var profileImageServiceObserver: NSObjectProtocol?
     
     private lazy var avatarImage: UIImageView = {
@@ -32,6 +32,11 @@ final class ProfileViewController: UIViewController {
         let button = UIButton()
         
         button.setImage(UIImage(resource: .exit), for: .normal)
+        
+        button.addTarget(
+            self,
+            action: #selector(didTapLogout),
+            for: .touchUpInside)
         
         return button
     }().forAutoLayout
@@ -148,6 +153,40 @@ final class ProfileViewController: UIViewController {
         avatarImage.kf.indicatorType = .activity
         avatarImage.kf.setImage(with: url, placeholder: placeholderImage)
     }
+    
+    private func switchToSplashScreen() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else
+        {
+            assertionFailure("Invalid window configuration")
+            return
+        }
+
+        window.rootViewController = SplashViewController()
+    }
+    
+    @objc private func didTapLogout() {
+        let alert = UIAlertController(
+            title: Constants.Alert.title,
+            message: Constants.Alert.subtitle,
+            preferredStyle: .alert)
+        
+        let logoutAction = UIAlertAction(
+            title: Constants.Alert.logoutButtonText,
+            style: .default) { [weak self] _ in
+                self?.profileLogoutService.logout()
+                self?.switchToSplashScreen()
+            }
+        
+        let cancelAction = UIAlertAction(
+            title: Constants.Alert.cancelButtonText,
+            style: .cancel)
+        
+        alert.addAction(cancelAction)
+        alert.addAction(logoutAction)
+
+        present(alert, animated: true, completion: nil)
+    }
 }
 
 // MARK: - Constants
@@ -162,6 +201,13 @@ private extension ProfileViewController {
         enum Typography {
             static let title: CGFloat = 23
             static let body: CGFloat = 13
+        }
+        
+        enum Alert {
+            static let title = "Пока, пока!"
+            static let subtitle = "Уверены, что хотите выйти?"
+            static let logoutButtonText = "Да"
+            static let cancelButtonText = "Нет"
         }
     }
 }

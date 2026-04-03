@@ -6,10 +6,14 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     // MARK: - Static Properties
     static let reuseIdentifier = "ImagesListCell"
+    
+    // MARK: - Public properties
+    weak var delegate: ImagesListCellDelegate?
     
     // MARK: - Private properties
     private var labelContainerGradientLayer: CAGradientLayer?
@@ -29,7 +33,12 @@ final class ImagesListCell: UITableViewCell {
         let button = UIButton(type: .custom)
         
         button.backgroundColor = .clear
-        button.setImage(.favoritesActive, for: .normal)
+        button.setImage(.favoritesNoActive, for: .normal)
+        
+        button.addTarget(
+            self,
+            action: #selector(didTapLike),
+            for: .touchUpInside)
         
         return button
     }().forAutoLayout
@@ -67,23 +76,35 @@ final class ImagesListCell: UITableViewCell {
         }
     }
     
-    // MARK: - Public methods
-    func config(with imageName: String, isLiked: Bool) {
-        guard let image = UIImage(named: imageName) else {
-            return
-        }
+    override func prepareForReuse() {
+        super.prepareForReuse()
         
+        cellImage.kf.cancelDownloadTask()
+    }
+    
+    // MARK: - Public methods
+    func config(with photo: Photo) {
+        cellImage.kf.indicatorType = .activity
+        cellImage.kf.setImage(
+            with: URL(string: photo.thumbImageURL),
+            placeholder: UIImage(resource: .cellImageStub))
+        
+        dateLabel.text = photo.createdAt?.longDateString ?? ""
+        
+        setIsLiked(photo.isLiked)
+    }
+    
+    func setIsLiked(_ isLiked: Bool) {
         let imageButton = isLiked
             ? UIImage(resource: .favoritesActive)
             : UIImage(resource: .favoritesNoActive)
         
-        cellImage.image = image
         likeButton.setImage(imageButton, for: .normal)
-        dateLabel.text = today.longDateString
     }
     
     // MARK: - Private methods
     private func setElements() {
+        contentView.isUserInteractionEnabled = true
         backgroundColor = .ypBlack
         selectionStyle = .none
         
@@ -139,6 +160,10 @@ final class ImagesListCell: UITableViewCell {
         labelContainerGradientLayer.frame = labelContainerView.bounds
         
         labelContainerView.layer.insertSublayer(labelContainerGradientLayer, at: 0)
+    }
+    
+    @objc private func didTapLike() {
+        delegate?.didTapLike(for: self)
     }
 }
 

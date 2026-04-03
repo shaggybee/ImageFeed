@@ -20,4 +20,8 @@ extension AppLogger: AppLoggerProtocol {
     func error(_ message: String) {
         logger.error(Logger.Message(stringLiteral: message))
     }
+    
+    func info(_ message: String) {
+        logger.info(Logger.Message(stringLiteral: message))
+    }
 }

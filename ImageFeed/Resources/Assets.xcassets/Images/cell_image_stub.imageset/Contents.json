@@ -1,11 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "11.jpg",
+      "filename" : "Stub.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "Stub-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

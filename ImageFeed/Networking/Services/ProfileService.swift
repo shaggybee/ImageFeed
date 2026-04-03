@@ -19,6 +19,10 @@ final class ProfileService {
     private init() {}
     
     // MARK: - Public methods
+    func reset() {
+        profile = nil
+    }
+    
     func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         task?.cancel()
         
@@ -58,7 +62,7 @@ final class ProfileService {
     
     // MARK: - Private methods
     private func makeProfileRequest(with token: String) -> URLRequest? {
-        guard let url = URL(string:  AuthorizationConstants.defaultBaseURLString + AuthorizationConstants.API.userProfile) else {
+        guard let url = URL(string: NetworkingConstants.API.userProfile.fullPath) else {
             logger.error("[ProfileService.makeProfileRequest] failed to create URL")
             
             return nil

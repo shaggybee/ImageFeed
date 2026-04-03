@@ -10,15 +10,9 @@ enum AuthorizationConstants {
     static let secretKey = "oWkXxNTv5kdSHzBkKSiACzBc_if9hNyeds3rF-j-COU"
     static let redirectURI = "urn:ietf:wg:oauth:2.0:oob"
     static let accessScope = "public+read_user+write_likes"
-    static let defaultBaseURLString = "https://api.unsplash.com"
     static let authorizeURLString = "https://unsplash.com/oauth/authorize"
     static let tokenURL = "https://unsplash.com/oauth/token"
     static let authorizeRelativeCodeAddress = "/oauth/authorize/native"
-    
-    enum API {
-        static let userProfile = "/me"
-        static let users = "/users"
-    }
     
     enum QueryItem {
         static let clientId = "client_id"
@@ -33,5 +27,38 @@ enum AuthorizationConstants {
     enum QueryItemValue {
         static let code = "code"
         static let authorizationCode = "authorization_code"
+    }
+}
+
+enum NetworkingConstants {
+    static let baseApiURLString = "https://api.unsplash.com"
+    
+    enum API {
+        case userProfile
+        case userInfo(username: String)
+        case photos
+        case photoLike(id: String)
+        
+        var fullPath: String {
+            switch self {
+            case .userProfile:
+                baseApiURLString + "/me"
+            case .userInfo(let username):
+                baseApiURLString + "/users/\(username)"
+            case .photos:
+                baseApiURLString + "/photos"
+            case .photoLike(let id):
+                baseApiURLString + "/photos/\(id)/like"
+            }
+        }
+    }
+    
+    enum QueryItem {
+        static let page = "page"
+        static let perPage = "per_page"
+    }
+    
+    enum Pagination {
+        static let defaultPerPage = 10
     }
 }

@@ -22,6 +22,10 @@ final class ProfileImageService {
     private init() {}
     
     // MARK: - Public methods
+    func reset() {
+        profileAvatarURL = nil
+    }
+    
     func fetchProfileImage(for username: String, completion: @escaping (Result<String, Error>) -> Void) {
         task?.cancel()
         
@@ -66,7 +70,7 @@ final class ProfileImageService {
     
     // MARK: - Private methods
     private func makeProfileImageRequest(for username: String, with token: String) -> URLRequest? {
-        guard let url = URL(string: AuthorizationConstants.defaultBaseURLString + AuthorizationConstants.API.users + "/\(username)") else {
+        guard let url = URL(string: NetworkingConstants.API.userInfo(username: username).fullPath) else {
             logger.error("[ProfileImageService.makeProfileImageRequest] failed to create URL")
             
             return nil
