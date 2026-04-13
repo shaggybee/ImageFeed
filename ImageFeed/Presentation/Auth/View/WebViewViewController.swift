@@ -7,9 +7,11 @@
 
 import WebKit
 
-final class WebViewViewController: UIViewController {
+final class WebViewViewController: UIViewController, WebViewViewControllerProtocol {
+
     //MARK: - Public properties
     weak var delegate: WebViewViewControllerDelegate?
+    var presenter: WebViewPresenterProtocol?
     
     // MARK: - Private properties
     private var estimatedProgressObservation: NSKeyValueObservation?
@@ -35,8 +37,7 @@ final class WebViewViewController: UIViewController {
         webView.navigationDelegate = self
         
         setElements()
-        loadAuthView()
-        updateProgress()
+        presenter?.viewDidLoad()
     }
     
     // MARK: - Overrides
@@ -49,8 +50,21 @@ final class WebViewViewController: UIViewController {
              changeHandler: { [weak self] _, _ in
                  guard let self else { return }
                  
-                 self.updateProgress()
+                 presenter?.didUpdateProgressValue(webView.estimatedProgress)
              })
+    }
+    
+    // MARK: - Public methods
+    func load(request: URLRequest) {
+        webView.load(request)
+    }
+    
+    func setProgressValue(_ newValue: Float) {
+        progressView.progress = newValue
+    }
+    
+    func setProgressHidden(_ isHidden: Bool) {
+        progressView.isHidden = isHidden
     }
     
     // MARK: - Private methods
@@ -76,41 +90,12 @@ final class WebViewViewController: UIViewController {
         ])
     }
     
-    private func loadAuthView() {
-        guard var urlComponents = URLComponents(string: AuthorizationConstants.authorizeURLString) else {
-            return
-        }
-        
-        urlComponents.queryItems = [
-            URLQueryItem(name: AuthorizationConstants.QueryItem.clientId, value: AuthorizationConstants.accessKey),
-            URLQueryItem(name: AuthorizationConstants.QueryItem.redirectUri, value: AuthorizationConstants.redirectURI),
-            URLQueryItem(name: AuthorizationConstants.QueryItem.responseType, value: AuthorizationConstants.QueryItemValue.code),
-            URLQueryItem(name: AuthorizationConstants.QueryItem.scope, value: AuthorizationConstants.accessScope)
-        ]
-        
-        guard let url = urlComponents.url else { return }
-    
-        webView.load(URLRequest(url: url))
-    }
-    
     private func code(from navigationAction: WKNavigationAction) -> String? {
-        if let url = navigationAction.request.url,
-           let urlComponents = URLComponents(string: url.absoluteString),
-           urlComponents.path == AuthorizationConstants.authorizeRelativeCodeAddress,
-           let items = urlComponents.queryItems,
-           let codeItem = items.first(where: { $0.name == AuthorizationConstants.QueryItemValue.code })
-        {
-            return codeItem.value
+        if let url = navigationAction.request.url {
+            return presenter?.code(from: url)
         } else {
             return nil
         }
-    }
-    
-    private func updateProgress() {
-        let estimatedProgress = webView.estimatedProgress
-        
-        progressView.progress = Float(estimatedProgress)
-        progressView.isHidden = fabs(estimatedProgress - Constants.maxProgress) <= Constants.precisionOfProgressCompare
     }
 }
 
@@ -128,13 +113,5 @@ extension WebViewViewController: WKNavigationDelegate {
         } else {
             decisionHandler(.allow)
         }
-    }
-}
-
-// MARK: - Constants
-private extension WebViewViewController {
-    enum Constants {
-        static let precisionOfProgressCompare = 0.0001
-        static let maxProgress = 1.0
     }
 }

@@ -101,7 +101,10 @@ final class AuthViewController: UIViewController {
     
     private func showWebViewController() {
         let webViewController = WebViewViewController()
+        let webViewPresenter = WebViewPresenter(authHelper: AuthHelper())
         webViewController.delegate = self
+        webViewController.presenter = webViewPresenter
+        webViewPresenter.view = webViewController
         
         navigationController?.pushViewController(webViewController, animated: true)
     }
