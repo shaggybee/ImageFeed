@@ -8,16 +8,12 @@
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
+    
+    // MARK: - Public properties
+    var presenter: ProfileViewPresenterProtocol?
     
     // MARK: - Private properties
-    private lazy var profileService = ProfileService.shared
-    private lazy var profileImageService = ProfileImageService.shared
-    private lazy var notificationCenter = NotificationCenter.default
-    private lazy var profileLogoutService = ProfileLogoutService.shared
-    
-    private var profileImageServiceObserver: NSObjectProtocol?
-    
     private lazy var avatarImage: UIImageView = {
         let imageView = UIImageView(image: UIImage(resource: .avatar))
         
@@ -61,7 +57,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
-
+        
         label.font = .systemFont(ofSize: Constants.Typography.body)
         label.textColor = .ypWhite
         label.lineBreakMode = .byWordWrapping
@@ -72,10 +68,10 @@ final class ProfileViewController: UIViewController {
     
     private lazy var profileInfoStackView: UIStackView = {
         let stackView = UIStackView()
-
+        
         stackView.axis = .vertical
         stackView.spacing = Constants.paddingXS
-
+        
         return stackView
     }().forAutoLayout
     
@@ -84,12 +80,34 @@ final class ProfileViewController: UIViewController {
         super.viewDidLoad()
         
         setElements()
-        addImageServiceObserver()
         
-        if let profile = profileService.profile {
-            updateProfileDetails(profile: profile)
+        presenter?.viewDidLoad()
+    }
+    
+    // MARK: - Public methods
+    func updateProfileDetails(profile: Profile) {
+        nameLabel.text = profile.name
+        loginLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio
+    }
+    
+    func updateAvatar(by url: URL) {
+        let placeholderImage = UIImage(resource: .tabProfileActive)
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: Constants.avatarImageSize))
+        
+        avatarImage.kf.indicatorType = .activity
+        avatarImage.kf.setImage(with: url, placeholder: placeholderImage)
+    }
+    
+    func switchToSplashScreen() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else
+        {
+            assertionFailure("Invalid window configuration")
+            return
         }
-        updateAvatar()
+        
+        window.rootViewController = SplashViewController()
     }
     
     // MARK: - Private methods
@@ -127,44 +145,6 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    private func updateProfileDetails(profile: Profile) {
-        nameLabel.text = profile.name
-        loginLabel.text = profile.loginName
-        descriptionLabel.text = profile.bio
-    }
-    
-    private func addImageServiceObserver() {
-        profileImageServiceObserver = notificationCenter.addObserver(
-            forName: ProfileImageService.didChangeNotification,
-            object: nil,
-            queue: .main,
-            using: { [weak self] _ in
-                self?.updateAvatar()
-            })
-    }
-    
-    private func updateAvatar() {
-        guard let profileAvatarURL = profileImageService.profileAvatarURL,
-              let url = URL(string: profileAvatarURL) else { return }
-        
-        let placeholderImage = UIImage(resource: .tabProfileActive)
-            .withConfiguration(UIImage.SymbolConfiguration(pointSize: Constants.avatarImageSize))
-        
-        avatarImage.kf.indicatorType = .activity
-        avatarImage.kf.setImage(with: url, placeholder: placeholderImage)
-    }
-    
-    private func switchToSplashScreen() {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first else
-        {
-            assertionFailure("Invalid window configuration")
-            return
-        }
-
-        window.rootViewController = SplashViewController()
-    }
-    
     @objc private func didTapLogout() {
         let alert = UIAlertController(
             title: Constants.Alert.title,
@@ -174,8 +154,7 @@ final class ProfileViewController: UIViewController {
         let logoutAction = UIAlertAction(
             title: Constants.Alert.logoutButtonText,
             style: .default) { [weak self] _ in
-                self?.profileLogoutService.logout()
-                self?.switchToSplashScreen()
+                self?.presenter?.logout()
             }
         
         let cancelAction = UIAlertAction(
@@ -184,7 +163,7 @@ final class ProfileViewController: UIViewController {
         
         alert.addAction(cancelAction)
         alert.addAction(logoutAction)
-
+        
         present(alert, animated: true, completion: nil)
     }
 }
