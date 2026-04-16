@@ -110,6 +110,28 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         window.rootViewController = SplashViewController()
     }
     
+    @objc func didTapLogout() {
+        let alert = UIAlertController(
+            title: Constants.Alert.title,
+            message: Constants.Alert.subtitle,
+            preferredStyle: .alert)
+        
+        let logoutAction = UIAlertAction(
+            title: Constants.Alert.logoutButtonText,
+            style: .default) { [weak self] _ in
+                self?.presenter?.logout()
+            }
+        
+        let cancelAction = UIAlertAction(
+            title: Constants.Alert.cancelButtonText,
+            style: .cancel)
+        
+        alert.addAction(cancelAction)
+        alert.addAction(logoutAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
     // MARK: - Private methods
     private func setElements() {
         avatarImage.image = UIImage(resource: .tabProfileActive)
@@ -145,27 +167,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         ])
     }
     
-    @objc private func didTapLogout() {
-        let alert = UIAlertController(
-            title: Constants.Alert.title,
-            message: Constants.Alert.subtitle,
-            preferredStyle: .alert)
-        
-        let logoutAction = UIAlertAction(
-            title: Constants.Alert.logoutButtonText,
-            style: .default) { [weak self] _ in
-                self?.presenter?.logout()
-            }
-        
-        let cancelAction = UIAlertAction(
-            title: Constants.Alert.cancelButtonText,
-            style: .cancel)
-        
-        alert.addAction(cancelAction)
-        alert.addAction(logoutAction)
-        
-        present(alert, animated: true, completion: nil)
-    }
+
 }
 
 // MARK: - Constants

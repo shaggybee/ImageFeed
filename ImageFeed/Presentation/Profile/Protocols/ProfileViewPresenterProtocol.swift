@@ -7,13 +7,8 @@
 
 import Foundation
 
-public protocol ProfileViewPresenterProtocol {
+protocol ProfileViewPresenterProtocol {
     var view: ProfileViewControllerProtocol? { get set }
     func viewDidLoad()
     func logout()
-    init(profileService: ProfileServiceProtocol,
-         profileLogoutService: ProfileLogoutServiceProtocol,
-         notificationCenter: NotificationCenter,
-         profileImageService: ProfileImageServiceProtocol
-    )
 }

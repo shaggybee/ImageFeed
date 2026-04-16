@@ -7,6 +7,6 @@
 
 import Foundation
 
-public protocol ProfileLogoutServiceProtocol {
+protocol ProfileLogoutServiceProtocol {
     func logout()
 }

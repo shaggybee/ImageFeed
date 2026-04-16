@@ -24,10 +24,14 @@ final class TabBarController: UITabBarController {
         tabBar.tintColor = .ypWhite
         
         let imagesListViewController = ImagesListViewController()
+        let imagesListViewPresenter = ImagesListViewPresenter()
         imagesListViewController.tabBarItem = UITabBarItem(
             title: nil,
             image: UIImage(resource: .tabEditorialActive),
             selectedImage: nil)
+        
+        imagesListViewPresenter.view = imagesListViewController
+        imagesListViewController.presenter = imagesListViewPresenter
         
         let profileViewController = ProfileViewController()
         let profileViewPresenter = ProfileViewPresenter()

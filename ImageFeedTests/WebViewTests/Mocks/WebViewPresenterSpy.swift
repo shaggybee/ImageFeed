@@ -5,7 +5,7 @@
 //  Created by Kislov Vadim on 13.04.2026.
 //
 
-import ImageFeed
+@testable import ImageFeed
 import Foundation
 
 final class WebViewPresenterSpy: WebViewPresenterProtocol {

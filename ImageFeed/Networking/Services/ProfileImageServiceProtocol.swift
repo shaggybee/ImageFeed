@@ -7,8 +7,7 @@
 
 import Foundation
 
-public protocol ProfileImageServiceProtocol {
-    static var didChangeNotification: Notification.Name { get }
+protocol ProfileImageServiceProtocol {
     var profileAvatarURL: String? { get }
     func reset()
 }

@@ -5,7 +5,7 @@
 //  Created by Kislov Vadim on 13.04.2026.
 //
 
-public protocol ProfileServiceProtocol {
+protocol ProfileServiceProtocol {
     var profile: Profile? { get }
     func reset()
 }

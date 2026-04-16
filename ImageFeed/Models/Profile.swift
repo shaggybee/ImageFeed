@@ -5,14 +5,14 @@
 //  Created by Kislov Vadim on 12.03.2026.
 //
 
-public struct Profile {
+struct Profile {
     let bio: String?
     let username: String
     let name: String
     
     var loginName: String { "@\(username)" }
     
-    public init(username: String, firstName: String, lastName: String?, bio: String?) {
+    init(username: String, firstName: String, lastName: String?, bio: String?) {
         self.bio = bio
         self.username = username
         

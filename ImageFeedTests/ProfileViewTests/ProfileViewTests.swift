@@ -9,26 +9,45 @@
 import XCTest
 
 final class ProfileViewTests: XCTestCase {
-    var viewController: ProfileViewControllerSpy!
-    var presenter: ProfileViewPresenterSpy!
+    var profileService: ProfileServiceSpy!
+    var profileImageService: ProfileImageServiceSpy!
     var profileLogoutService: ProfileLogoutServiceSpy!
+    var viewController: ProfileViewControllerSpy!
+    var presenter: ProfileViewPresenter!
     
-    override func setUp() {
+    @MainActor override func setUp() {
         super.setUp()
         
+        profileService = ProfileServiceSpy()
+        profileImageService = ProfileImageServiceSpy()
         profileLogoutService = ProfileLogoutServiceSpy()
+        
         viewController = ProfileViewControllerSpy()
-        presenter = ProfileViewPresenterSpy(
-            profileService: ProfileServiceSpy(),
+        presenter = ProfileViewPresenter(
+            profileService: profileService,
             profileLogoutService: profileLogoutService,
             notificationCenter: .default,
-            profileImageService: ProfileImageServiceSpy()
+            profileImageService: profileImageService
         )
+        
+        viewController.presenter = presenter
+        presenter.view = viewController
+    }
+    
+    @MainActor override func tearDown() {
+        profileService = nil
+        profileImageService = nil
+        profileLogoutService = nil
+        viewController = nil
+        presenter = nil
+        
+        super.tearDown()
     }
     
     @MainActor func testViewControllerCallViewDidLoad() {
         // given
         let viewController = ProfileViewController()
+        let presenter = ProfileViewPresenterSpy()
         
         viewController.presenter = presenter
         presenter.view = viewController
@@ -42,11 +61,7 @@ final class ProfileViewTests: XCTestCase {
     
     @MainActor func testPresenterCallsUpdateProfileOnView() {
         // given
-        let profileService = ProfileServiceSpy()
         let bio: String? = profileService.profile?.bio
-        
-        viewController.presenter = presenter
-        presenter.view = viewController
         
         // when
         presenter.viewDidLoad()
@@ -58,11 +73,7 @@ final class ProfileViewTests: XCTestCase {
     
     @MainActor func testPresenterCallsUpdateAvatartOnView() {
         // given
-        let profileImageService = ProfileImageServiceSpy()
         let avatarURL: URL? = URL(string: profileImageService.profileAvatarURL ?? "")
-        
-        viewController.presenter = presenter
-        presenter.view = viewController
         
         // when
         presenter.viewDidLoad()
@@ -73,24 +84,16 @@ final class ProfileViewTests: XCTestCase {
     }
     
     @MainActor func testSwitchToSplashScreenAfterLogout() {
-        // given
-        viewController.presenter = presenter
-        presenter.view = viewController
-        
         // when
-        presenter.logout()
+        viewController.didTapLogout()
         
         // then
         XCTAssertTrue(viewController.isSwitchedToSplashScreen)
     }
     
     @MainActor func testUserSessionDataResetAfterLogout() {
-        // given
-        viewController.presenter = presenter
-        presenter.view = viewController
-        
         // when
-        presenter.logout()
+        viewController.didTapLogout()
         
         // then
         XCTAssertTrue(profileLogoutService.isUserSessionDataReset)

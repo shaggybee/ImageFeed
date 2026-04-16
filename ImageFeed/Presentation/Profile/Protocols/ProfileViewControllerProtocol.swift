@@ -7,9 +7,10 @@
 
 import Foundation
 
-public protocol ProfileViewControllerProtocol: AnyObject {
+protocol ProfileViewControllerProtocol: AnyObject {
     var presenter: ProfileViewPresenterProtocol? { get set }
     func updateAvatar(by url: URL)
     func updateProfileDetails(profile: Profile)
     func switchToSplashScreen()
+    func didTapLogout()
 }

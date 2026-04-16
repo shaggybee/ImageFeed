@@ -10,7 +10,7 @@ import UIKit
 final class AuthViewController: UIViewController {
     
     // MARK: - Public properties
-    public weak var delegate: AuthViewControllerDelegate?
+    weak var delegate: AuthViewControllerDelegate?
     
     // MARK: - Private properties
     private lazy var tokenStorage = OAuth2TokenStorage.shared
