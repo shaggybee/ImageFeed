@@ -23,21 +23,17 @@ final class ImagesListServiceSpy: ImagesListServiceProtocol {
     var photosCount: Int {
         photos.count
     }
-    var lastLoadedPage: Int?
     var changeLikeError: ImagesListServiceErrors?
     var likedPhotoId: String?
     
     // MARK: - Public methods
     func reset() {
         photos = []
-        lastLoadedPage = nil
         likedPhotoId = nil
         changeLikeError = nil
     }
     
     func fetchPhotosNextPage(completion: @escaping (Result<[Photo], Error>) -> Void) {
-        lastLoadedPage = (lastLoadedPage ?? 0) + 1
-
         let newPhotos = generatePhotos()
         
         photos.append(contentsOf: newPhotos)

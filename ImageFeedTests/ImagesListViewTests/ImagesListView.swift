@@ -47,7 +47,7 @@ final class ImagesListView: XCTestCase {
         XCTAssertTrue(presenter.viewDidLoadCalled)
     }
 
-    @MainActor func testPresenterCallsShowErrorAfterLikingPhoto() {
+    @MainActor func testPresenterReturnsErrorWhenLikePhotoFails() {
         // when
         presenter.viewDidLoad()
         presenter.changeLike(for: imagesListService.indexPhotoWithError, {})
@@ -56,17 +56,15 @@ final class ImagesListView: XCTestCase {
         XCTAssertEqual(imagesListService.changeLikeError, ImagesListServiceErrors.changeLikeError)
     }
     
-    @MainActor func testPresenterUpdatesRangeOfTableCellsAfterFetchImages() {
+    @MainActor func testPresenterCallsUpdateTableViewAnimatedAfterFetchImages() {
         // when
         presenter.viewDidLoad()
         presenter.fetchPhotos()
         presenter.fetchPhotos()
 
         // then
-        let lastLoadedPage = imagesListService.lastLoadedPage ?? 0
-        
-        let startIndex = max(0, lastLoadedPage * imagesListService.pageSize - imagesListService.pageSize)
-        let endIndex = lastLoadedPage * imagesListService.pageSize
+        let startIndex = max(0, presenter.photosCount - imagesListService.pageSize)
+        let endIndex = presenter.photosCount
         
         XCTAssertEqual(viewController.updatedTableCellStartIndex, startIndex)
         XCTAssertEqual(viewController.updatedTableCellEndIndex, endIndex)
@@ -83,5 +81,19 @@ final class ImagesListView: XCTestCase {
         // then
         XCTAssertNotNil(imagesListService.photos[safe: indexPhoto]?.id)
         XCTAssertEqual(imagesListService.likedPhotoId, imagesListService.photos[safe: indexPhoto]?.id)
+    }
+    
+    @MainActor func testPresenterReturnLargeImageURLForCell() {
+        // given
+        let indexPhoto = 4
+        
+        // when
+        presenter.viewDidLoad()
+        
+        //then
+        let photoUrl = URL(string: presenter.photos[safe: indexPhoto]?.largeImageURL ?? "")
+        
+        XCTAssertNotNil(photoUrl)
+        XCTAssertEqual(photoUrl, presenter.getLargeImageURL(for: indexPhoto))
     }
 }
