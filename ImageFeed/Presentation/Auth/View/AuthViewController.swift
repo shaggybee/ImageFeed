@@ -27,6 +27,7 @@ final class AuthViewController: UIViewController {
     private lazy var loginButton: UIButton = {
         let button = UIButton(type: .custom)
         
+        button.accessibilityIdentifier = Constants.loginButtonIdentifier
         button.setTitle(Constants.loginButtonText, for: .normal)
         button.backgroundColor = .ypWhite
         button.setTitleColor(.ypBlack, for: .normal)
@@ -143,12 +144,12 @@ extension AuthViewController: WebViewViewControllerDelegate {
 // MARK: - Constants
 private extension AuthViewController {
     enum Constants {
+        static let loginButtonIdentifier = "loginButton"
         static let loginButtonText = "Войти"
         static let loginButtonHeight: CGFloat = 48
         static let logoImageSize: CGFloat = 60
         static let buttonCornerRadius: CGFloat = 16
         static let buttonBottomPadding: CGFloat = 90
-        
         static let paddingS: CGFloat = 16
     
         enum Alert {

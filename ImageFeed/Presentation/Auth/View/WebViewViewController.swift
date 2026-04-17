@@ -19,6 +19,8 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
     private lazy var webView: WKWebView = {
         let webView = WKWebView()
         
+        webView.accessibilityIdentifier = Constants.webViewIdentifier
+        
         return webView
     }().forAutoLayout
     
@@ -33,7 +35,7 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
     // MARK: - Lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         webView.navigationDelegate = self
         
         setElements()
@@ -113,5 +115,12 @@ extension WebViewViewController: WKNavigationDelegate {
         } else {
             decisionHandler(.allow)
         }
+    }
+}
+
+// MARK: - Constants
+private extension WebViewViewController {
+    enum Constants {
+        static let webViewIdentifier = "UnsplashWebView"
     }
 }

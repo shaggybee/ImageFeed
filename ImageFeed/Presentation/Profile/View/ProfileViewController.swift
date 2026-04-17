@@ -116,6 +116,8 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
             message: Constants.Alert.subtitle,
             preferredStyle: .alert)
         
+        alert.view.accessibilityIdentifier = Constants.Alert.alertIdentifier
+        
         let logoutAction = UIAlertAction(
             title: Constants.Alert.logoutButtonText,
             style: .default) { [weak self] _ in
@@ -185,6 +187,7 @@ private extension ProfileViewController {
         }
         
         enum Alert {
+            static let alertIdentifier = "logoutAlert"
             static let title = "Пока, пока!"
             static let subtitle = "Уверены, что хотите выйти?"
             static let logoutButtonText = "Да"
