@@ -100,6 +100,9 @@ final class ImagesListCell: UITableViewCell {
             : UIImage(resource: .favoritesNoActive)
         
         likeButton.setImage(imageButton, for: .normal)
+        likeButton.accessibilityIdentifier = isLiked
+            ? Constants.buttonWithLikeOnIdentifier
+            : Constants.buttonWithLikeOffIdentifier
     }
     
     // MARK: - Private methods
@@ -170,6 +173,9 @@ final class ImagesListCell: UITableViewCell {
 // MARK: - Constants
 private extension ImagesListCell {
     enum Constants {
+        static let buttonWithLikeOnIdentifier = "buttonWithLikeOn"
+        static let buttonWithLikeOffIdentifier = "buttonWithLikeOff"
+        
         static let cornerRadius: CGFloat = 16
         
         static let likeButtonSize: CGFloat = 44

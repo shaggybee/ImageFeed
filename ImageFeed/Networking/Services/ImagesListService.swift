@@ -8,7 +8,7 @@
 import Foundation
 import CoreGraphics
 
-final class ImagesListService {
+final class ImagesListService: ImagesListServiceProtocol {
     static let shared = ImagesListService()
     static let didChangeNotification = Notification.Name(Constants.imagesListServiceDidChangeNotification)
     
