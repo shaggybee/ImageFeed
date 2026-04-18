@@ -71,7 +71,7 @@ final class ProfileViewTests: XCTestCase {
         XCTAssertEqual(viewController.profileDetails?.bio, bio)
     }
     
-    @MainActor func testPresenterCallsUpdateAvatartOnView() {
+    @MainActor func testPresenterCallsUpdateAvatarOnView() {
         // given
         let avatarURL: URL? = URL(string: profileImageService.profileAvatarURL ?? "")
         

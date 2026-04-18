@@ -13,7 +13,7 @@ enum ImagesListServiceErrors: Error {
 }
 
 final class ImagesListServiceSpy: ImagesListServiceProtocol {
-    static var didChangeNotification: Notification.Name = Notification.Name(rawValue: "testDidChangeNotification")
+    static var didChangeNotification: Notification.Name = Notification.Name("testDidChangeNotification")
     
     // MARK: - Public properties
     let pageSize: Int = 10

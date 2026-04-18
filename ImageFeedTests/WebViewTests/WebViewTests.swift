@@ -75,7 +75,7 @@ final class WebViewTests: XCTestCase {
         let helper = AuthHelper()
         
         // when
-        let code = helper.code(from: url)
+        let code = helper.getCode(from: url)
     
         // then
         XCTAssertEqual(code, AuthorizationConstants.QueryItemValue.authorizationCode)

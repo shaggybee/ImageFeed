@@ -10,20 +10,21 @@ import Foundation
 final class AuthHelper: AuthHelperProtocol {
     
     // MARK: - Public properties
-    let configuration: AuthConfiguration
+    var authURLRequest: URLRequest? {
+        guard let url = authURL() else { return nil }
+        
+        return URLRequest(url: url)
+     }
+    
+    // MARK: - Private properties
+    private let configuration: AuthConfiguration
     
     init(configuration: AuthConfiguration = .standard) {
         self.configuration = configuration
     }
     
     // MARK: - Public methods
-    func authRequest() -> URLRequest? {
-        guard let url = authURL() else { return nil }
-        
-        return URLRequest(url: url)
-    }
-    
-    func code(from url: URL) -> String? {
+    func getCode(from url: URL) -> String? {
         if let urlComponents = URLComponents(string: url.absoluteString),
            urlComponents.path == AuthorizationConstants.authorizeRelativeCodeAddress,
            let items = urlComponents.queryItems,

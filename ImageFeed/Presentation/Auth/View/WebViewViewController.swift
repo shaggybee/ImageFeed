@@ -92,9 +92,9 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
         ])
     }
     
-    private func code(from navigationAction: WKNavigationAction) -> String? {
+    private func getCode(from navigationAction: WKNavigationAction) -> String? {
         if let url = navigationAction.request.url {
-            return presenter?.code(from: url)
+            return presenter?.getCode(from: url)
         } else {
             return nil
         }
@@ -108,7 +108,7 @@ extension WebViewViewController: WKNavigationDelegate {
         decidePolicyFor navigationAction: WKNavigationAction,
         decisionHandler: @escaping @MainActor (WKNavigationActionPolicy) -> Void
     ) {
-        if let code = code(from: navigationAction) {
+        if let code = getCode(from: navigationAction) {
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             
             decisionHandler(.cancel)
